@@ -22,6 +22,7 @@ export async function GET(context: APIContext) {
 		`- [Writing](${url('/writing/')}): articles and notes`,
 		`- [Research](${url('/research/')}): research focus, projects and publications`,
 		...(projects.length ? [`- [Projects](${url('/projects/')}): things I have built`] : []),
+		`- [Repo](${url('/repo/')}): research software and source repositories`,
 		`- [CV](${url('/cv/')}): experience, education and certifications`,
 		'',
 		'## Posts',

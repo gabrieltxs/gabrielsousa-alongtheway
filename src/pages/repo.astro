@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import Row from '../components/Row.astro';
+const recent = [
+  { name: 'BOX', area: 'Eye tracking', summary: 'A MATLAB environment for psychology experiments with EyeLink integration. Configure a session, present the experiment and collect eye-movement and response data.', tags: ['MATLAB', 'EyeLink', 'Experimental psychology'], flow: ['Configure', 'Run experiment', 'Record responses'], note: 'Requires an EyeLink setup. Repository access is restricted.', url: 'https://github.com/gabrieltxs/BOX', private: true },
+  { name: 'Software Chain 2.0', area: 'Behavioral experiments', summary: 'A lab.js platform for sequential-response experiments with words, images and conditional verbal cues. Sessions produce structured event logs and spreadsheet exports.', tags: ['JavaScript', 'lab.js', 'XLSX'], flow: ['Set parameters', 'Define the chain', 'Run & export'], note: 'Includes a Builder import, configuration examples and documentation.', url: 'https://github.com/gabrieltxs/Software-Chain-2.0', private: false },
+];
+const research = [
+  { name: 'SPICE Netlist Validator', area: 'Circuit descriptions', summary: 'A C++ syntax validator for a supported subset of SPICE netlists. This project studies the structure of circuit descriptions; it is not a numerical circuit simulator.', tags: ['C++', 'Parsing', 'SPICE'], url: 'https://github.com/gabrieltxs/spice-netlist-validator', private: false, branch: 'refactor/portable-layout-and-docs', review: 1, note: 'Portable C++11 build, restored headers and regression tests. Supports a partial SPICE grammar.' },
+  { name: 'Genomic AMR Pipeline', area: 'Genomic features', summary: 'A Python research pipeline connecting genomic k-mer frequencies and specialty-gene annotations to antimicrobial-resistance prediction.', tags: ['Python', 'Bioinformatics', 'LightGBM'], url: 'https://github.com/gabrieltxs/genomic-amr-pipeline', private: false, branch: 'refactor/pipeline-structure-docs', review: 25, note: 'Shared configuration runner, portable setup and usage guides. Historical model runs require external data and a legacy environment.' },
+  { name: 'k-mer AMR Prediction', area: 'Resistance prediction', summary: 'Research code for extracting k-mer features from FASTA sequences, preparing phenotype targets and evaluating LightGBM classifiers across four antibiotics.', tags: ['Python', 'k-mers', 'Machine learning'], url: 'https://github.com/gabrieltxs/kmer-amr-prediction', private: true, branch: 'refactor/portable-research-pipeline', review: 1, note: 'Portable preprocessing and training commands, with synthetic smoke tests. Original scripts are preserved; historical results have not been reproduced.' },
+];
+---
+<Base title="Repo" description="Research software: experimental psychology, circuit parsing and genomic machine learning.">
+  <div class="row page-head"><div></div><div>
+    <h1 class="page-title">Repo</h1>
+    <p class="page-intro">Software behind the experiments.</p>
+    <p class="repo-intro">Tools for running studies, preparing data and exploring research questions. Each repository has its own scope, setup and documentation.</p>
+  </div></div>
+  <Row label="Recent work">
+    <div class="repo-grid">
+      {recent.map(repo => <article class="repo-card">
+        <div class="repo-eyebrow"><span>{repo.area}</span><span>{repo.private ? 'Private' : 'Public'}</span></div>
+        <h2><a href={repo.url} target="_blank" rel="noopener">{repo.name}<span aria-hidden="true"> ↗</span></a></h2>
+        <p>{repo.summary}</p>
+        <ol class="repo-flow" aria-label={`${repo.name} workflow`}>{repo.flow.map(step => <li>{step}</li>)}</ol>
+        <ul class="tags">{repo.tags.map(tag => <li><span class="tag">{tag}</span></li>)}</ul>
+        <p class="repo-note">{repo.note}</p>
+        <a class="link repo-action" href={repo.url} target="_blank" rel="noopener">{repo.private ? 'Repository · access required' : 'Explore code & documentation'} <span aria-hidden="true">↗</span></a>
+      </article>)}
+    </div>
+  </Row>
+  <Row label="Earlier research">
+    <div class="repo-research">
+      {research.map(repo => <article class="repo-card">
+        <div class="repo-eyebrow"><span>{repo.area}</span><span>{repo.private ? 'Private · access required' : 'Public'}</span></div>
+        <h2><a href={repo.url} target="_blank" rel="noopener">{repo.name}<span aria-hidden="true"> ↗</span></a></h2>
+        <p>{repo.summary}</p>
+        <ul class="tags">{repo.tags.map(tag => <li><span class="tag">{tag}</span></li>)}</ul>
+        <p class="repo-note">{repo.note}</p>
+        <p class="repo-note">Refactored version available for review.</p>
+        <div class="inline-links repo-action">
+          <a class="link" href={`${repo.url}/tree/${repo.branch}`} target="_blank" rel="noopener">Refactored code & documentation ↗</a>
+          <a class="link" href={`${repo.url}/pull/${repo.review}`} target="_blank" rel="noopener">Review changes ↗</a>
+        </div>
+      </article>)}
+    </div>
+  </Row>
+</Base>
+<style>
+.repo-intro { color: var(--muted); margin-top: 1rem; max-width: 60ch; }
+.repo-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; }
+.repo-research { display: grid; gap: 1rem; }
+.repo-card { display:flex; flex-direction:column; gap:1rem; min-width:0; padding:1.5rem; border:1px solid var(--line-strong); border-radius:1rem; background:var(--raised); }
+.repo-card h2 { font-family:var(--serif); font-size:1.8rem; font-weight:400; line-height:1.15; overflow-wrap:anywhere; }
+.repo-card h2 a { text-decoration:none; }
+.repo-card > p { color:var(--text-2); }
+.repo-eyebrow { display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5rem; font-size:.75rem; color:var(--muted); }
+.repo-flow { display:flex; flex-wrap:wrap; gap:.4rem; padding:0; list-style:none; counter-reset:step; margin-block:.5rem; }
+.repo-flow li { font-size:.75rem; counter-increment:step; }
+.repo-flow li::before { content:counter(step) ' / '; color:var(--accent); }
+.repo-flow li + li { margin-left:.5rem; }
+.repo-card .repo-note { font-size:.8125rem; color:var(--muted); }
+.repo-action { margin-top:auto; align-self:flex-start; font-size:.875rem; }
+@media(max-width:65rem) { .repo-grid { grid-template-columns:1fr; } }
+</style>
