@@ -43,7 +43,7 @@ const jsonLd = {
 		<div>
 			<h1 class="hero-name">{profile.displayName}</h1>
 			<p class="hero-role">{profile.tagline}</p>
-			<p class="hero-statement">{profile.statement}</p>
+			<p class="hero-statement">{profile.statement}{' '}<a class="writing-invitation" href={href('/writing/')}>Here I write about what I’ve learned along the way.</a></p>
 			<ul class="inline-links hero-links">
 				<li><a class="link" href={href('/cv/')}>CV</a></li>
 				{
@@ -79,3 +79,20 @@ const jsonLd = {
 
 	</div>
 </Base>
+
+<style>
+	.writing-invitation {
+		color: #a3ff12;
+		text-decoration-thickness: 0.04em;
+		text-underline-offset: 0.12em;
+	}
+
+	:global(:root[data-theme='light']) .writing-invitation {
+		color: #398000;
+	}
+
+	.writing-invitation:hover,
+	.writing-invitation:focus-visible {
+		text-decoration-line: underline;
+	}
+</style>
