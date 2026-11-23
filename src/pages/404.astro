@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/paths';
+---
+
+<Base title="Page not found" noindex>
+	<div class="row page-head">
+		<div></div>
+		<div>
+			<h1 class="page-title">This page does not exist</h1>
+			<p class="page-intro">
+				The address may have changed, or the link that brought you here may be wrong. Try the
+				<a class="link" href={href('/writing/')}>list of posts</a> or go back to the
+				<a class="link" href={href('/')}>home page</a>.
+			</p>
+		</div>
+	</div>
+</Base>

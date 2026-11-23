@@ -1,0 +1,47 @@
+{
+  "retrieved_on": "2026-11-23",
+  "sources": [
+    {
+      "file": "nvidia-professional-llms.png",
+      "image_url": "https://images.credly.com/images/4b94e285-07f8-484f-9bb5-aff9d9d5c709/blob",
+      "source_page": "https://www.credly.com/badges/23760ae2-c9c6-4bee-ab0a-7acb5b72d0af/public_url",
+      "note": "Personal NVIDIA Professional credential"
+    },
+    {
+      "file": "nvidia-associate-llms.png",
+      "image_url": "https://images.credly.com/images/01c81db8-c1f5-41f6-b0f8-ac22442f8fa1/image.png",
+      "source_page": "https://www.credly.com/badges/93f1b401-ed6f-415c-bbb3-48f7a82d3be9/public_url",
+      "note": "Personal NVIDIA Associate LLMs credential"
+    },
+    {
+      "file": "nvidia-associate-multimodal.png",
+      "image_url": "https://images.credly.com/images/3a48bfb1-6b85-42f3-8c82-10178b948419/image.png",
+      "source_page": "https://www.credly.com/badges/cb16bd6f-1903-48eb-a9db-3d9f947417a1/public_url",
+      "note": "Personal NVIDIA Associate Multimodal credential"
+    },
+    {
+      "file": "microsoft-fundamentals.svg",
+      "image_url": "https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-fundamentals-badge.svg",
+      "source_page": "https://learn.microsoft.com/en-us/credentials/certifications/power-platform-fundamentals/",
+      "note": "Official certification emblem; not a personal verification record"
+    },
+    {
+      "file": "ibm-machine-learning-python.png",
+      "image_url": "https://images.credly.com/images/f283df3d-1780-4c2d-947d-fc80eae0953b/image.png",
+      "source_page": "https://www.credly.com/org/ibm/badge/machine-learning-with-python",
+      "note": "Official course emblem; personal certificate version not provided"
+    },
+    {
+      "file": "fiap.svg",
+      "image_url": "https://www.eucapacito.com.br/wp-content/uploads/2023/08/FIAP.svg",
+      "source_page": "https://www.eucapacito.com.br/cursos/cloud-fundamentals/",
+      "note": "Issuer logo shown on the course page; no course-specific badge available"
+    },
+    {
+      "file": "duolingo-english-test.png",
+      "image_url": "https://dy8n3onijof8f.cloudfront.net/static/images/testcenter/favicon-juicy.png",
+      "source_page": "https://certs.duolingo.com/10m3pg2k0nxuoegy",
+      "note": "Official Duolingo English Test icon referenced in the certificate page metadata; not a separate C1 badge"
+    }
+  ]
+}

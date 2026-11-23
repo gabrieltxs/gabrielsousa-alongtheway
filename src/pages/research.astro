@@ -1,0 +1,109 @@
+---
+import CopyScript from '../components/CopyScript.astro';
+import PublicationList from '../components/PublicationList.astro';
+import Row from '../components/Row.astro';
+import { profile } from '../data/profile';
+import { publications } from '../data/publications';
+import { researchProjects } from '../data/research';
+import Base from '../layouts/Base.astro';
+import { period } from '../lib/dates';
+import { href } from '../lib/paths';
+
+const description =
+	'Research on domain-adaptive pre-training, post-training and alignment of language models, and on legal NLP: focus, projects and publications.';
+
+const academicProfiles = [
+	{ label: 'Lattes CV', url: profile.links.lattes },
+	{ label: 'Google Scholar', url: profile.links.scholar },
+	{ label: 'ORCID', url: profile.links.orcid },
+].filter((item) => item.url);
+---
+
+<Base title="Research" description={description}>
+	<div class="row page-head">
+		<div></div>
+		<div>
+			<h1 class="page-title">Research</h1>
+			<p class="page-intro">What I study, the projects I work on and where to find the full record.</p>
+		</div>
+	</div>
+
+	<Row label="Focus">
+		<ul class="plain-list">
+			{profile.interests.map((interest) => <li>{interest}</li>)}
+		</ul>
+	</Row>
+
+	{
+		researchProjects.length > 0 && (
+			<Row label="Projects">
+				<ul class="entries">
+					{researchProjects.map((project) => (
+						<li class="entry">
+							<h3 class="entry-title">{project.title}</h3>
+							<span class="entry-when">{period(project.start, project.end)}</span>
+							<p class="entry-desc">
+								{project.role}, {project.organisations}
+							</p>
+							<ul class="points">
+								{project.points.map((point) => (
+									<li>{point}</li>
+								))}
+							</ul>
+							{project.links && project.links.length > 0 && (
+								<ul class="entry-extra inline-links">
+									{project.links.map((link) => (
+										<li>
+											<a class="link" href={href(link.url)}>
+												{link.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							)}
+						</li>
+					))}
+				</ul>
+			</Row>
+		)
+	}
+
+	<Row label="Publications">
+		{
+			publications.length > 0 ? (
+				<PublicationList items={publications} />
+			) : (
+				<p>
+					{profile.links.lattes ? (
+						<>
+							For now, my publications are listed on{' '}
+							<a class="link" href={profile.links.lattes}>
+								my Lattes CV
+							</a>
+							.
+						</>
+					) : (
+						'Publications will be listed here.'
+					)}
+				</p>
+			)
+		}
+	</Row>
+
+	{
+		academicProfiles.length > 0 && (
+			<Row label="Profiles">
+				<ul class="inline-links">
+					{academicProfiles.map((item) => (
+						<li>
+							<a class="link" href={item.url} rel="me noopener">
+								{item.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			</Row>
+		)
+	}
+	<CopyScript />
+</Base>

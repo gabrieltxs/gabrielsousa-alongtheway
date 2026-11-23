@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" width="720" height="200" role="img" aria-labelledby="t">
+	<title id="t">A prompt goes into a model, which produces a draft</title>
+	<rect width="720" height="200" rx="12" fill="#121b26" />
+	<g fill="none" stroke="#5e6e82" stroke-width="1.2">
+		<rect x="60" y="68" width="160" height="64" rx="10" />
+		<rect x="280" y="68" width="160" height="64" rx="10" />
+		<rect x="500" y="68" width="160" height="64" rx="10" stroke="#edc55a" />
+		<path d="M228 100h40M260 94l8 6-8 6" />
+		<path d="M448 100h40M480 94l8 6-8 6" />
+	</g>
+	<g font-family="Helvetica, Arial, sans-serif" font-size="17" font-weight="500" fill="#e8edf3" text-anchor="middle">
+		<text x="140" y="106">Prompt</text>
+		<text x="360" y="106">Model</text>
+		<text x="580" y="106">Draft</text>
+	</g>
+</svg>

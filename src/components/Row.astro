@@ -1,0 +1,17 @@
+---
+// A section of a page: a hairline on top, a label in the margin column,
+// content in the text column.
+interface Props {
+	label: string;
+	id?: string;
+}
+
+const { label, id = `section-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}` } = Astro.props;
+---
+
+<section class="row section" aria-labelledby={id}>
+	<h2 class="row-label" id={id}>{label}</h2>
+	<div class="row-body">
+		<slot />
+	</div>
+</section>

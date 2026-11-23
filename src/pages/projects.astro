@@ -1,0 +1,56 @@
+---
+import Row from '../components/Row.astro';
+import { projects } from '../data/projects';
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/paths';
+
+const description = 'Applied work on language models: domain-adaptive pre-training, post-training, alignment tooling and agentic RAG systems.';
+---
+
+<Base title="Projects" description={description} noindex={projects.length === 0}>
+	<div class="row page-head">
+		<div></div>
+		<div>
+			<h1 class="page-title">Projects</h1>
+			<p class="page-intro">Applied work on language models, from data curation to alignment.</p>
+		</div>
+	</div>
+
+	{
+		projects.length === 0 && (
+			<Row label="Projects">
+				<p>No projects are listed yet.</p>
+			</Row>
+		)
+	}
+
+	{
+		projects.map((project) => (
+			<Row label={project.period} id={`project-${project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+				<h3 class="entry-title">{project.name}</h3>
+				<p>{project.summary}</p>
+				{project.role && <p class="meta">My part: {project.role}</p>}
+				{project.tags && project.tags.length > 0 && (
+					<ul class="tags">
+						{project.tags.map((tag) => (
+							<li>
+								<span class="tag">{tag}</span>
+							</li>
+						))}
+					</ul>
+				)}
+				{project.links && project.links.length > 0 && (
+					<ul class="inline-links" style="font-size: 0.875rem">
+						{project.links.map((link) => (
+							<li>
+								<a class="link" href={href(link.url)}>
+									{link.label}
+								</a>
+							</li>
+						))}
+					</ul>
+				)}
+			</Row>
+		))
+	}
+</Base>

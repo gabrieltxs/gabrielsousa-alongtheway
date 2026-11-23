@@ -1,0 +1,81 @@
+---
+import Row from '../components/Row.astro';
+import UpdatesBanner from '../components/UpdatesBanner.astro';
+import { certifications, education } from '../data/cv';
+import { news } from '../data/news';
+import { activeLinks, profile } from '../data/profile';
+import { projects } from '../data/projects';
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/paths';
+import { getPosts } from '../lib/posts';
+import { collectUpdates } from '../lib/updates';
+
+const allPosts = await getPosts();
+const updates = collectUpdates(allPosts, news, projects, certifications);
+const links = activeLinks();
+
+// Tells search engines who this site is about and which profiles are yours.
+const siteUrl = new URL(href('/'), Astro.site).toString();
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: profile.name,
+	honorificSuffix: 'M.Sc.',
+	url: siteUrl,
+	description: profile.description,
+	jobTitle: profile.role,
+	...(profile.employer && { worksFor: { '@type': 'Organization', name: profile.employer } }),
+	alumniOf: [...new Set(education.map((item) => item.institution))].map((name) => ({
+		'@type': 'CollegeOrUniversity',
+		name,
+	})),
+	knowsAbout: profile.interests,
+	sameAs: links.map((link) => link.url),
+};
+---
+
+<Base jsonLd={jsonLd}>
+	<div class="home">
+	<section class="row hero">
+		<div>
+			<img class="portrait" src={href('/1649783605466.jpg')} alt={`Portrait of ${profile.name}`} width="400" height="400" fetchpriority="high" decoding="async" />
+		</div>
+		<div>
+			<h1 class="hero-name">{profile.displayName}</h1>
+			<p class="hero-role">{profile.tagline}</p>
+			<p class="hero-statement">{profile.statement}</p>
+			<ul class="inline-links hero-links">
+				<li><a class="link" href={href('/cv/')}>CV</a></li>
+				{
+					links.map((link) => (
+						<li>
+							<a class="link" href={link.url} target="_blank" rel="me noopener">
+								{link.label}
+							</a>
+						</li>
+					))
+				}
+				{
+					profile.email && (
+						<li>
+							<a class="link" href={`mailto:${profile.email}`}>
+								Email
+							</a>
+						</li>
+					)
+				}
+			</ul>
+		</div>
+	</section>
+
+	<Row label="About">
+		{profile.about.map((paragraph) => <p>{paragraph}</p>)}
+		<p>
+			<a class="link" href={href('/research/')}>Research focus and projects</a>
+		</p>
+	</Row>
+
+	{updates.length > 0 && <div class="home-updates"><Row label="Latest updates"><UpdatesBanner items={updates} /></Row></div>}
+
+	</div>
+</Base>

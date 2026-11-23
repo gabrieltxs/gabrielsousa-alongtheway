@@ -1,0 +1,57 @@
+# Builds the site and publishes it to GitHub Pages every time you push to `main`.
+#
+# One-time setup on GitHub: repository Settings > Pages > Source > "GitHub Actions".
+# Nothing in this file needs editing: the site's address (github.io or your own
+# domain) is read from the repository's Pages settings.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Lets you run the deploy by hand from the Actions tab.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deploys at once; let the one in progress finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Read the site address from the Pages settings
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Install, build and upload the site
+        uses: withastro/action@v6
+        with:
+          node-version: "24.22.3"
+        env:
+          # https://username.github.io, or your custom domain once it is set.
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          # "/repo-name" for a project site, empty otherwise.
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - name: Test before deployment
+        run: npm test
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

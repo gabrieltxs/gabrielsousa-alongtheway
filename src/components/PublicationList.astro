@@ -1,0 +1,77 @@
+---
+// A list of publications: the reference on the left, the year on the right.
+import { profile } from '../data/profile';
+import { type Publication, typeLabels } from '../data/publications';
+
+interface Props {
+	items: Publication[];
+	// Hide links and summaries for a denser list (used on the CV page).
+	compact?: boolean;
+}
+
+const { items, compact = false } = Astro.props;
+
+const linkLabels: Record<string, string> = {
+	pdf: 'PDF',
+	arxiv: 'arXiv',
+	doi: 'DOI',
+	code: 'Code',
+	data: 'Data',
+	slides: 'Slides',
+	video: 'Video',
+};
+
+const sorted = [...items].sort((a, b) => b.year - a.year);
+---
+
+<ul class="entries">
+	{
+		sorted.map((pub) => (
+			<li class="entry">
+				<h3 class="entry-title">
+					{pub.url ? (
+						<a class="link" href={pub.url}>
+							{pub.title}
+						</a>
+					) : (
+						pub.title
+					)}
+				</h3>
+				<span class="entry-when">{pub.year}</span>
+				<p class="entry-desc">
+					{pub.authors.map((author, i) => (
+						<Fragment>
+							{author === profile.name ? <strong>{author}</strong> : author}
+							{i < pub.authors.length - 1 ? ', ' : ''}
+						</Fragment>
+					))}
+				</p>
+				<p class="entry-desc">
+					<em>{pub.venue}</em>
+					<span class="kind">{typeLabels[pub.type]}</span>
+				</p>
+				{!compact && pub.summary && <p class="entry-desc">{pub.summary}</p>}
+				{!compact && (pub.links || pub.bibtex) && (
+					<ul class="entry-extra inline-links">
+						{Object.entries(pub.links ?? {})
+							.filter(([, url]) => url)
+							.map(([key, url]) => (
+								<li>
+									<a class="link" href={url}>
+										{linkLabels[key] ?? key}
+									</a>
+								</li>
+							))}
+						{pub.bibtex && (
+							<li>
+								<button class="text-button" type="button" data-copy={pub.bibtex}>
+									Copy BibTeX
+								</button>
+							</li>
+						)}
+					</ul>
+				)}
+			</li>
+		))
+	}
+</ul>

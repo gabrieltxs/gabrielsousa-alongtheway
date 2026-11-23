@@ -1,0 +1,121 @@
+---
+import { profile } from '../data/profile';
+import { projects } from '../data/projects';
+import { href, isCurrent } from '../lib/paths';
+
+// The menu. "Projects" appears once src/data/projects.ts has an entry.
+const nav = [
+	{ label: 'Home', path: '/' },
+	{ label: 'Writing', path: '/writing/' },
+	{ label: 'Research', path: '/research/' },
+	...(projects.length ? [{ label: 'Projects', path: '/projects/' }] : []),
+	{ label: 'CV', path: '/cv/' },
+];
+
+const { pathname } = Astro.url;
+---
+
+<a class="skip" href="#main">Skip to content</a>
+<header>
+	<div class="site-header">
+		<a class="site-name" href={href('/')} aria-label={`Along the way. — ${profile.displayName} — Home`}>
+			<span class="site-logo-title">Along the way.</span>
+			<span class="site-logo-subtitle">{profile.displayName}</span>
+		</a>
+		<nav class="site-nav" aria-label="Main">
+			<ul>
+				{
+					nav.map((item) => (
+						<li>
+							<a href={href(item.path)} aria-current={isCurrent(pathname, item.path) ? 'page' : undefined}>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between dark and light theme">
+			<svg viewBox="0 0 16 16" aria-hidden="true">
+				<circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.4"></circle>
+				<path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor"></path>
+			</svg>
+		</button>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		padding-inline: clamp(1rem, 3vw, 4rem);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		gap: 1.25rem 1rem;
+	}
+	.site-name {
+		justify-self: start;
+		display: inline-flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+	.site-logo-title {
+		font-family: var(--serif);
+		font-size: clamp(2rem, 2.8vw, 2.5rem);
+		font-weight: 300;
+		line-height: 1.1;
+		letter-spacing: -0.022em;
+		white-space: nowrap;
+	}
+	.site-logo-subtitle {
+		font-size: 0.75rem;
+		font-weight: 400;
+		line-height: 1.4;
+		letter-spacing: 0.025em;
+		color: var(--text-2);
+	}
+	.site-nav {
+		justify-self: center;
+	}
+	.site-nav ul {
+		justify-content: center;
+		gap: 0.25rem;
+	}
+	.site-nav a {
+		display: block;
+		padding: 0.5rem 0.875rem;
+		border-radius: 0.5rem;
+		font-weight: 500;
+		transition: color 0.15s ease, background-color 0.15s ease;
+	}
+	.site-nav a:hover { background: var(--hover); }
+	.site-nav a[aria-current='page'] {
+		background: var(--accent);
+		color: var(--bg);
+	}
+	.theme-toggle { justify-self: end; }
+	@media (max-width: 64rem) {
+		.site-header { grid-template-columns: minmax(0, 1fr) auto; }
+		.site-nav { grid-column: 1 / -1; grid-row: 2; }
+		.theme-toggle { grid-column: 2; grid-row: 1; }
+	}
+	@media (max-width: 34rem) {
+		.site-nav ul { gap: 0.125rem; }
+		.site-nav a { padding-inline: 0.5rem; font-size: 0.8125rem; }
+	}
+	@media (max-width: 22rem) {
+		.site-nav a { padding-inline: 0.375rem; }
+	}
+	@media print {
+		.theme-toggle { display: none; }
+	}
+</style>
+
+<script is:inline>
+	document.querySelector('[data-theme-toggle]').addEventListener('click', function () {
+		var root = document.documentElement;
+		var next = root.dataset.theme === 'light' ? 'dark' : 'light';
+		root.dataset.theme = next;
+		try {
+			localStorage.setItem('theme', next);
+		} catch (e) {}
+	});
+</script>

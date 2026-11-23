@@ -1,0 +1,90 @@
+---
+// The shell shared by every page: <head>, header, main area, footer.
+import type { ComponentProps } from 'astro/types';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import UpdatesBanner from '../components/UpdatesBanner.astro';
+import { isCurrent } from '../lib/paths';
+
+type Props = ComponentProps<typeof BaseHead>;
+const isHome = isCurrent(Astro.url.pathname, '/');
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+	<head>
+		<BaseHead {...Astro.props} />
+		<slot name="head" />
+	</head>
+	<body class:list={{ 'home-page': isHome }}>
+		<Header />
+		<main id="main" class="frame">
+			<slot />
+		</main>
+		<Footer />
+		{!isHome && <aside class="scroll-tools" aria-label="Latest updates and page navigation" hidden>
+			<UpdatesBanner compact />
+			<button class="go-to-top" type="button" hidden>Go to top</button>
+		</aside>}
+	</body>
+</html>
+
+<script>
+	const topButton = document.querySelector<HTMLButtonElement>('.go-to-top');
+	const scrollTools = document.querySelector<HTMLElement>('.scroll-tools');
+	if (topButton && scrollTools) {
+		const updateTopButton = () => { scrollTools.hidden = topButton.hidden = window.scrollY <= 0; };
+		window.addEventListener('scroll', updateTopButton, { passive: true });
+		updateTopButton();
+		topButton.addEventListener('click', () => {
+			window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+			document.querySelector<HTMLAnchorElement>('.site-name')?.focus({ preventScroll: true });
+		});
+	}
+
+	document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+		if (['http:', 'https:'].includes(link.protocol) &&
+			(link.origin !== window.location.origin || link.closest('.post'))) {
+			link.target = '_blank';
+			link.relList.add('noopener');
+		}
+	});
+</script>
+
+<style>
+	.scroll-tools {
+		position: fixed;
+		right: 1rem;
+		bottom: max(1rem, env(safe-area-inset-bottom));
+		z-index: 20;
+		width: calc(20vw - 2rem);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.scroll-tools[hidden] { display: none; }
+	.scroll-tools > :global(.updates) { width: 100%; }
+	.go-to-top {
+		min-height: 2.75rem;
+		padding: 0.65rem 1rem;
+		border: 1px solid var(--line-strong);
+		border-radius: 0.75rem;
+		background: var(--accent);
+		color: var(--bg);
+		font-size: 0.875rem;
+		font-weight: 600;
+		box-shadow: 0 0.25rem 1rem rgb(0 0 0 / 20%);
+		cursor: pointer;
+	}
+	@media (max-width: 64rem) {
+		.scroll-tools {
+			right: max(1rem, env(safe-area-inset-right));
+			width: min(15rem, calc(100vw - 2rem));
+		}
+	}
+	@media print {
+		.scroll-tools { display: none; }
+	}
+</style>

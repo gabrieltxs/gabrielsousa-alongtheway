@@ -1,0 +1,21 @@
+---
+// Makes every button with a data-copy attribute copy that text to the
+// clipboard and confirm it. Include once on any page that has such buttons.
+---
+
+<script>
+	document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+		const label = button.textContent ?? 'Copy';
+		button.addEventListener('click', async () => {
+			try {
+				await navigator.clipboard.writeText(button.dataset.copy ?? '');
+				button.textContent = 'Copied';
+			} catch {
+				button.textContent = 'Copy failed. Select the text instead';
+			}
+			window.setTimeout(() => {
+				button.textContent = label;
+			}, 1800);
+		});
+	});
+</script>

@@ -1,0 +1,68 @@
+---
+// A list of posts. Each row is clickable: title and summary on the left,
+// date on the right.
+import { isoDate, monthYear, shortDate } from '../lib/dates';
+import { href } from '../lib/paths';
+import { type Post, postPath, tagSlug } from '../lib/posts';
+
+interface Props {
+	posts: Post[];
+	// 'day' when the list sits under a year heading ("Nov 22"),
+	// 'month' when it stands alone ("Nov 2026").
+	dates?: 'day' | 'month';
+	archive?: boolean;
+}
+
+const { posts, dates = 'month', archive = false } = Astro.props;
+
+function when(date: Date): string {
+	return dates === 'day' ? shortDate(date) : monthYear(isoDate(date).slice(0, 7));
+}
+---
+
+<ul class:list={['entries entries-linked', { archive }]}>
+	{
+		posts.map((post) => (
+			<li class="entry entry-linked" data-keywords={post.data.tags.map(tagSlug).join(' ')}>
+				<h3 class="entry-title">
+					<a class="entry-link" href={href(postPath(post))}>
+						{post.data.title}
+					</a>
+					{post.data.kind === 'note' && <span class="kind">Note</span>}
+					{post.data.draft && <span class="kind">Draft</span>}
+				</h3>
+				<time class="entry-when" datetime={isoDate(post.data.pubDate)}>
+					{when(post.data.pubDate)}
+				</time>
+				<p class="entry-desc">{post.data.description}</p>
+				{archive && <ul class="tags entry-extra" aria-label="Keywords">
+					{post.data.tags.map(tag => <li><a class="tag" data-keyword={tagSlug(tag)} href={href(`/tags/${tagSlug(tag)}/`)}>{tag}</a></li>)}
+				</ul>}
+			</li>
+		))
+	}
+</ul>
+
+<style>
+	.archive { margin-block: 0; }
+	.archive .entry {
+		margin-inline: 0;
+		padding: clamp(1rem, 2.5vw, 1.5rem);
+		border: 1px solid var(--line-strong);
+		border-left: 3px solid var(--accent);
+		background: var(--raised);
+	}
+	.archive .entry + .entry { margin-top: 1rem; }
+	.archive .entry:hover { background: var(--hover); }
+	.archive .entry[hidden] { display: none; }
+	.archive .entry-title { font-size: 1.125rem; font-weight: 600; }
+	.archive .entry-when { font-size: .875rem; color: var(--text-2); }
+	.archive .entry-desc { margin-top: .65rem; color: var(--text-2); }
+	.archive .entry-extra { margin-top: 1rem; }
+	.archive .tag { font-size: .875rem; line-height: 1.4; border-color: var(--line-strong); }
+	.archive .tag:hover { color: var(--accent); border-color: var(--accent); }
+	@media (max-width: 40rem) {
+		.archive .entry { grid-template-columns: minmax(0, 1fr); }
+		.archive .entry-when { grid-row: 1; margin-bottom: .5rem; }
+	}
+</style>

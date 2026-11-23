@@ -1,0 +1,16 @@
+---
+// Visitor statistics (optional, off by default).
+//
+// To turn them on, paste the <script> tag from your analytics service
+// between the two Fragment tags below, and add `is:inline` to it, e.g.
+//
+//   <script is:inline defer src="https://..." data-...="..."></script>
+//
+// Options that need no cookie banner: Cloudflare Web Analytics (free),
+// GoatCounter (free for personal sites), Plausible (paid).
+//
+// The snippet loads on the published site only, never under `npm run dev`.
+const enabled = import.meta.env.PROD;
+---
+
+{enabled && <Fragment />}

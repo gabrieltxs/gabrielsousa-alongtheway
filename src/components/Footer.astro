@@ -1,0 +1,36 @@
+---
+import { activeLinks, profile } from '../data/profile';
+import { href } from '../lib/paths';
+
+// The date of the last build, so visitors can tell the site is kept up to date.
+const now = new Date();
+const updated = now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+
+<footer class="frame">
+	<div class="row site-footer meta">
+		<p>© {now.getUTCFullYear()} {profile.displayName}</p>
+		<div class="footer-main">
+			<ul class="inline-links">
+				{
+					activeLinks().map((link) => (
+						<li>
+							<a href={link.url} rel="me noopener">
+								{link.label}
+							</a>
+						</li>
+					))
+				}
+				{
+					profile.email && (
+						<li>
+							<a href={`mailto:${profile.email}`}>Email</a>
+						</li>
+					)
+				}
+				<li><a href={href('/rss.xml')}>RSS</a></li>
+			</ul>
+			<p>Updated {updated}</p>
+		</div>
+	</div>
+</footer>

@@ -1,0 +1,10 @@
+// /robots.txt: lets search engines in and points them at the sitemap.
+import type { APIContext } from 'astro';
+import { href } from '../lib/paths';
+
+export function GET(context: APIContext) {
+	const sitemap = new URL(href('/sitemap-index.xml'), context.site).toString();
+	return new Response(`User-agent: *\nAllow: /\n\nSitemap: ${sitemap}\n`, {
+		headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+	});
+}

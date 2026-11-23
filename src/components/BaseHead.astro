@@ -1,0 +1,85 @@
+---
+// Everything that goes in <head>: fonts, page title, search and link-preview
+// metadata, and the script that applies the saved colour theme.
+import '../styles/global.css';
+import { Font } from 'astro:assets';
+import { profile } from '../data/profile';
+import { href } from '../lib/paths';
+import Analytics from './Analytics.astro';
+
+interface Props {
+	title?: string;
+	description?: string;
+	type?: 'website' | 'article';
+	publishedTime?: Date;
+	modifiedTime?: Date;
+	// Structured data (schema.org) for search engines.
+	jsonLd?: Record<string, unknown>;
+	noindex?: boolean;
+}
+
+const {
+	title,
+	description = profile.description,
+	type = 'website',
+	publishedTime,
+	modifiedTime,
+	jsonLd,
+	noindex = false,
+} = Astro.props;
+
+const pageTitle = title ? `${title} | ${profile.displayName}` : `${profile.displayName}, ${profile.headline}`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const imageURL = new URL(href('/og.png'), Astro.site);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
+<link rel="icon" href={href('/favicon.ico')} sizes="48x48" />
+<link rel="apple-touch-icon" href={href('/apple-touch-icon.png')} />
+<link rel="sitemap" href={href('/sitemap-index.xml')} />
+<link rel="alternate" type="application/rss+xml" title={profile.displayName} href={new URL(href('/rss.xml'), Astro.site)} />
+<meta name="generator" content={Astro.generator} />
+{noindex && <meta name="robots" content="noindex" />}
+
+<Font cssVariable="--font-geist" preload />
+<Font cssVariable="--font-newsreader" />
+<Font cssVariable="--font-geist-mono" />
+
+<link rel="canonical" href={canonicalURL} />
+<title>{pageTitle}</title>
+<meta name="description" content={description} />
+<meta name="author" content={profile.name} />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={profile.displayName} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title ?? profile.displayName} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageURL} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+{type === 'article' && <meta property="article:author" content={profile.name} />}
+<meta name="twitter:card" content="summary_large_image" />
+
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+<!--
+	The site is light by default. A visitor who switches to the dark theme
+	keeps it on later visits; this runs before the page paints.
+-->
+<script is:inline>
+	(function () {
+		var saved = null;
+		try {
+			saved = localStorage.getItem('theme');
+		} catch (e) {}
+		document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
+	})();
+</script>
+
+<Analytics />

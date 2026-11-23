@@ -1,0 +1,41 @@
+---
+import PostList from '../../components/PostList.astro';
+import Row from '../../components/Row.astro';
+import Base from '../../layouts/Base.astro';
+import { href } from '../../lib/paths';
+import { collectTags, getPosts, groupByYear, tagSlug } from '../../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	return collectTags(posts).map(({ tag, slug }) => ({
+		params: { tag: slug },
+		props: { tag, posts: posts.filter((post) => post.data.tags.some((t) => tagSlug(t) === slug)) },
+	}));
+}
+
+const { tag, posts } = Astro.props;
+const years = groupByYear(posts, (post) => post.data.pubDate.getUTCFullYear());
+const description = `Everything on this site about ${tag}.`;
+---
+
+<Base title={`Writing on ${tag}`} description={description}>
+	<div class="row page-head">
+		<div></div>
+		<div>
+			<h1 class="page-title">{tag}</h1>
+			<p class="page-intro">
+				{posts.length}
+				{posts.length === 1 ? 'post' : 'posts'} on this topic.
+				<a class="link" href={href('/writing/')}>See all writing</a>
+			</p>
+		</div>
+	</div>
+
+	{
+		years.map(({ year, items }) => (
+			<Row label={String(year)} id={`year-${year}`}>
+				<PostList posts={items} dates="day" archive />
+			</Row>
+		))
+	}
+</Base>

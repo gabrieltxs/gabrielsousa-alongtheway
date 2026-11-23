@@ -1,0 +1,157 @@
+---
+// Layout of a single post: centered details and a table of contents in the margin,
+// the text in the main column, then how to cite it and where to go next.
+import 'katex/dist/katex.min.css';
+import type { MarkdownHeading } from 'astro';
+import CopyScript from '../components/CopyScript.astro';
+import { profile } from '../data/profile';
+import { isoDate, longDate } from '../lib/dates';
+import { href } from '../lib/paths';
+import { type Post, postPath, readingTime, tagSlug } from '../lib/posts';
+import Base from './Base.astro';
+
+interface Props {
+	post: Post;
+	headings: MarkdownHeading[];
+	newer?: Post;
+	older?: Post;
+}
+
+const { post, headings, newer, older } = Astro.props;
+const { title, description, pubDate, updatedDate, kind, tags, draft } = post.data;
+
+// The "Footnotes" heading that Markdown adds is left out of the list.
+const toc = headings.filter(
+	(heading) => (heading.depth === 2 || heading.depth === 3) && heading.slug !== 'footnote-label',
+);
+const url = new URL(href(postPath(post)), Astro.site).toString();
+
+// A ready-made reference for people who want to cite the post.
+const year = pubDate.getUTCFullYear();
+const month = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'][pubDate.getUTCMonth()];
+const familyName = profile.citationName.split(',')[0].trim().toLowerCase().replace(/[^a-z]/g, '');
+const firstWord = post.id.split(/[-/]/).find((word) => word.length > 2) ?? 'post';
+const bibtex = `@misc{${familyName}${year}${firstWord},
+  author = {${profile.citationName}},
+  title  = {${title}},
+  year   = {${year}},
+  month  = ${month},
+  url    = {${url}}
+}`;
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: title,
+	description,
+	datePublished: pubDate.toISOString(),
+	dateModified: (updatedDate ?? pubDate).toISOString(),
+	author: { '@type': 'Person', name: profile.name, url: new URL(href('/'), Astro.site).toString() },
+	mainEntityOfPage: url,
+	keywords: tags.join(', '),
+	inLanguage: 'en',
+};
+---
+
+<Base
+	title={title}
+	description={description}
+	type="article"
+	publishedTime={pubDate}
+	modifiedTime={updatedDate}
+	jsonLd={jsonLd}
+	noindex={draft}
+>
+	<article class="row post">
+		<aside class="post-rail meta" aria-label="About this post">
+
+			{
+				toc.length >= 3 && (
+					<nav class="rail-toc" aria-label="On this page">
+						<p class="rail-title">On this page</p>
+						<ol class="toc">
+							{toc.map((heading) => (
+								<li class={`depth-${heading.depth}`}>
+									<a href={`#${heading.slug}`}>{heading.text}</a>
+								</li>
+							))}
+						</ol>
+					</nav>
+				)
+			}
+		</aside>
+
+		<div class="post-main">
+			<header class="post-head">
+				<div class="post-meta meta">
+					<div>
+						Published <time datetime={isoDate(pubDate)}>{longDate(pubDate)}</time>
+					</div>
+					{
+						updatedDate && (
+							<div>
+								Updated <time datetime={isoDate(updatedDate)}>{longDate(updatedDate)}</time>
+							</div>
+						)
+					}
+					<div>{readingTime(post)} min read</div>
+					{kind === 'note' && <div>Note</div>}
+					{draft && <div>Draft, not published</div>}
+				</div>
+				<h1 class="post-title">{title}</h1>
+				<p class="post-standfirst">{description}</p>
+				{tags.length > 0 && (
+					<ul class="tags post-keywords" aria-label="Keywords">
+						{tags.map((tag) => (
+							<li><a class="tag" href={href(`/tags/${tagSlug(tag)}/`)}>{tag}</a></li>
+						))}
+					</ul>
+				)}
+			</header>
+
+			<div class="prose">
+				<slot />
+			</div>
+
+			<footer class="post-end">
+
+				<section aria-labelledby="post-cite">
+					<h2 class="section-title" id="post-cite">Cite this post</h2>
+					<div class="copy-block">
+						<pre><code>{bibtex}</code></pre>
+						<button class="copy-button" type="button" data-copy={bibtex}>Copy</button>
+					</div>
+				</section>
+
+				{
+					(newer || older) && (
+						<nav class="pager" aria-label="More posts">
+							<div>
+								{older && (
+									<>
+										<p class="meta">Older</p>
+										<a href={href(postPath(older))}>
+											{older.data.title}
+										</a>
+									</>
+								)}
+							</div>
+							<div class="pager-next">
+								{newer && (
+									<>
+										<p class="meta">Newer</p>
+										<a href={href(postPath(newer))}>
+											{newer.data.title}
+										</a>
+									</>
+								)}
+							</div>
+						</nav>
+					)
+				}
+			</footer>
+		</div>
+	</article>
+	<CopyScript />
+</Base>
+
