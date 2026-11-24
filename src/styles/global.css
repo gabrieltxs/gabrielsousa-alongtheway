@@ -1161,11 +1161,11 @@ pre {
 	text-align: center;
 	text-wrap: wrap;
 }
-.card-subtitle span {
-	color: #8fd7d5;
-	white-space: nowrap;
-}
-:root[data-theme='light'] .card-subtitle span { color: #246e70; }
+.card-subtitle span,
+.card-about .text-highlight { color: #8fd7d5; }
+.card-subtitle span { white-space: nowrap; }
+:root[data-theme='light'] .card-subtitle span,
+:root[data-theme='light'] .card-about .text-highlight { color: #246e70; }
 /* Identity stays together on the left; the reading column starts at the top. */
 .card-id {
 	padding-top: clamp(2rem, 5vh, 4rem);

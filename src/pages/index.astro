@@ -86,7 +86,11 @@ const jsonLd = {
 				<p class="card-subtitle">Then I build the experiments to test them, across <span>pre-training</span>, <span>post-training</span>, and <span>serving</span>.</p>
 				<p class="card-author">Sousa, G.T.A.</p>
 				<div class="card-about">
-					{profile.about.map((paragraph) => <p>{paragraph}</p>)}
+					{profile.about.map((paragraph) => (
+						<p>{paragraph.split(/(\{[^{}]+\})/g).map((part) =>
+							part.startsWith('{') ? <span class="text-highlight">{part.slice(1, -1)}</span> : part
+						)}</p>
+					))}
 				</div>
 				<p class="card-statement card-statement-2">
 					<a href={href('/writing/')}>Here I write about what I’ve learned along the way.</a>

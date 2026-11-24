@@ -13,12 +13,21 @@ try {
   await page.reload();
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.equal(await page.locator('.icon-links a').count(), 4);
-  assert.equal(await page.locator('.card-about p').count(), 4);
+  assert.equal(await page.locator('.card-about p').count(), 3);
+  assert.deepEqual(await page.locator('.card-about .text-highlight').allTextContents(), [
+    'Deloitte', 'PetroNeMo', 'Petrobras and NVIDIA', 'NVIDIA GTC 2025',
+    'M.Sc. research', 'Federal University of Goiás', 'Center of Excellence in Artificial Intelligence',
+  ]);
+  assert(!/[{}]/.test(await page.locator('.card-about').innerText()));
   assert.equal(await page.locator('.card-statement').first().innerText(), 'I research how language models learn a new domain and its tasks.');
   assert.equal(await page.locator('.card-statement-2 a').innerText(), 'Here I write about what I’ve learned along the way.');
   assert.equal(await page.locator('.scroll-tools').count(), 0);
   for (const theme of ['dark', 'light']) {
     await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
+    assert(await page.evaluate(() => {
+      const color = getComputedStyle(document.querySelector('.card-statement-2 a')).color;
+      return [...document.querySelectorAll('.card-about .text-highlight')].every(el => getComputedStyle(el).color === color);
+    }), `${theme} biography highlight colors`);
     for (const [width, height] of [[320, 740], [390, 844], [832, 900], [1024, 768], [1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2544, 1400]]) {
       await page.setViewportSize({ width, height });
       await page.evaluate(() => document.fonts.ready);
@@ -41,7 +50,7 @@ try {
       if (width >= 960) {
         assert(layout.sideBySide && layout.justified, `${theme} ${width} columns`);
         assert(layout.headerClear, `${theme} ${width} title overlaps header`);
-        // The full four-paragraph biography scrolls naturally on shorter desktops.
+        // The full biography scrolls naturally on shorter desktops.
         if (width >= 1680 && height >= 1050) {
           assert(!layout.overflowY && layout.cardsVisible, `${theme} ${width}x${height}: ${JSON.stringify(layout)}`);
         }
