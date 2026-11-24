@@ -59,7 +59,11 @@ const jsonLd = {
 		<header class="card-id">
 			<img class="card-photo" src={href('/1649783605466.jpg')} alt={`Portrait of ${profile.name}`} width="400" height="400" fetchpriority="high" decoding="async" />
 			<h1 class="card-name">{profile.displayName}</h1>
-			<p class="card-role">{profile.role} at {profile.employer} · LLM Researcher at CEIA-UFG · {profile.location}</p>
+			<p class="card-role">
+				{profile.role} at {profile.employer}<br />
+				LLM Researcher at CEIA-UFG<br />
+				{profile.location}
+			</p>
 			<ul class="icon-links">
 				{iconLinks.map((link) => (
 					<li>
