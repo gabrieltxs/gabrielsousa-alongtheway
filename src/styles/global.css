@@ -1138,11 +1138,16 @@ pre {
 	min-width: 0;
 	--home-section-gap: clamp(1.5rem, 3vh, 2rem);
 }
-.card-content > :not(.card-updates) {
-	margin-inline: clamp(0.25rem, 1.5vw, 1.5rem);
-	font-family: 'Times New Roman', Times, serif;
+/* The title sets the reading column's intrinsic width; prose follows its edges. */
+.card-reading {
+	display: grid;
+	width: fit-content;
+	max-width: calc(100% - 2 * clamp(0.25rem, 1.5vw, 1.5rem));
+	margin-inline: auto;
 }
-.card-content > .card-statement:first-child {
+.card-reading > * { font-family: 'Times New Roman', Times, serif; }
+.card-reading > :not(:first-child) { contain: inline-size; min-width: 0; }
+.card-reading > .card-statement:first-child {
 	text-align: center;
 	text-wrap: wrap;
 }
