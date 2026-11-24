@@ -1,8 +1,7 @@
 ---
 import PublicationList from '../components/PublicationList.astro';
-import ContactInfo from '../components/ContactInfo.astro';
 import Row from '../components/Row.astro';
-import { awards, certifications, contactEmailEncoded, education, experience, languages, researchExperience, skills, summary } from '../data/cv';
+import { awards, certifications, education, experience, languages, researchExperience, skills, summary } from '../data/cv';
 import { profile } from '../data/profile';
 import { publications } from '../data/publications';
 import Base from '../layouts/Base.astro';
@@ -21,21 +20,16 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 				{profile.headline}. M.Sc. in Computer Science. {profile.role} at {profile.employer}, {profile.location}.
 			</p>
 			<ul class="inline-links no-print" style="margin-top: 1.5rem; font-size: 0.875rem">
-				{contactEmailEncoded && (
-					<li data-nosnippet>
-						<ContactInfo label="Show contact email" />
-					</li>
-				)}
 				{profile.cvPdfs.map((document) => (
 					<li>
-						<a class="link" href={href(document.url)} hreflang={document.language} type="application/pdf" download target="_blank" rel="noopener">
-							{document.label}
+						<a class="cv-download" href={href(document.url)} hreflang={document.language} type="application/pdf" download target="_blank" rel="noopener" aria-label={document.label} title={document.label}>
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<path d="M6 3h8l4 4v14H6zM14 3v4h4M12 10v7m-3-3 3 3 3-3" />
+							</svg>
+							<span aria-hidden="true">{document.language.startsWith('pt') ? '🇧🇷' : '🇺🇸'}</span>
 						</a>
 					</li>
 				))}
-				<li>
-					<button class="text-button" type="button" data-print>Print or save as PDF</button>
-				</li>
 				{
 					profile.links.lattes && (
 						<li>
@@ -252,6 +246,18 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 </Base>
 
 <style>
+	.cv-download {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		min-height: 44px;
+		padding: 0.5rem;
+		border: 1px solid var(--line-strong);
+		border-radius: 0.6rem;
+		color: var(--text);
+		text-decoration: none;
+	}
+	.cv-download:hover { color: var(--accent); border-color: var(--accent); }
 	.certification-row {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) 3rem;
@@ -282,7 +288,3 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 		line-height: 1.6;
 	}
 </style>
-
-<script>
-	document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
-</script>
