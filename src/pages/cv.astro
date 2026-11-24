@@ -26,15 +26,13 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 						<button class="text-button" type="button" data-contact-email={contactEmailEncoded}>Show contact email</button>
 					</li>
 				)}
-				{
-					profile.cvPdf && (
-						<li>
-							<a class="link" href={href(profile.cvPdf)}>
-								Download as PDF
-							</a>
-						</li>
-					)
-				}
+				{profile.cvPdfs.map((document) => (
+					<li>
+						<a class="link" href={href(document.url)} hreflang={document.language} type="application/pdf" download target="_blank" rel="noopener">
+							{document.label}
+						</a>
+					</li>
+				))}
 				<li>
 					<button class="text-button" type="button" data-print>Print or save as PDF</button>
 				</li>

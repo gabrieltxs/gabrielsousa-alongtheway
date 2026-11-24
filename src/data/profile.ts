@@ -60,9 +60,11 @@ export const profile = {
 		x: '',
 	},
 
-	// Put a PDF in public/ (for example public/cv.pdf) and set this to '/cv.pdf'
-	// to show a download link on the CV page.
-	cvPdf: '',
+	// PDF downloads shown on the CV page; files live in public/documents/.
+	cvPdfs: [
+		{ label: 'Download CV — Portuguese (PDF)', language: 'pt-BR', url: '/documents/gabriel-sousa-cv-pt.pdf' },
+		{ label: 'Download résumé — English (PDF)', language: 'en', url: '/documents/gabriel-sousa-resume-en.pdf' },
+	],
 };
 
 // Labels for the links above, in the order they are displayed.

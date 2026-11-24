@@ -14,7 +14,7 @@ O site está pronto para ir ao ar. Esta lista reúne o que só você pode confir
 
 - [ ] **Publicações** (`src/data/publications.ts`). A lista está vazia e a página Research aponta para o Lattes. O artigo de 2020 (primeiro autor, validação léxica e sintática de listas de conectividade de circuitos elétricos) pode entrar com título, coautores e evento exatos. Há um modelo comentado no arquivo.
 - [ ] **Links** (`src/data/profile.ts`): GitHub, Google Scholar, ORCID e Hugging Face. Cada um aparece no site assim que for preenchido.
-- [ ] **CV em PDF** (opcional): coloque em `public/cv.pdf` e defina `cvPdf: '/cv.pdf'` em `src/data/profile.ts`. Sem isso, a página CV oferece "Print or save as PDF".
+- [x] **CVs em PDF**: as versões em português e inglês estão em `public/documents/`, com links em `cvPdfs` de `src/data/profile.ts`. Para atualizar, substitua os PDFs correspondentes. A página CV também oferece "Print or save as PDF".
 - [ ] **Itens do LinkedIn fora do currículo:** a especialização em Banco de Dados com Big Data (UFG) e dois prêmios da PUC Goiás estão comentados em `src/data/cv.ts`. Tire as barras para mostrar.
 
 ## Decidir
