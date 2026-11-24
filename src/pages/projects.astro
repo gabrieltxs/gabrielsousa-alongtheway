@@ -4,6 +4,8 @@ import { projects } from '../data/projects';
 import Base from '../layouts/Base.astro';
 import { href } from '../lib/paths';
 
+const chronologicalProjects = [...projects].sort((a, b) => b.period.localeCompare(a.period, 'en', { numeric: true }));
+
 const description = 'Applied work on language models: domain-adaptive pre-training, post-training, alignment tooling and agentic RAG systems.';
 ---
 
@@ -24,31 +26,29 @@ const description = 'Applied work on language models: domain-adaptive pre-traini
 		)
 	}
 
-	{
-		projects.map((project, index) => (
-			<Row label={project.period} id={`project-${project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
-				<article class="project-card glow" style={`--hue: ${[212, 38, 160, 268][index % 4]}`}>
-					{project.tags && project.tags.length > 0 && <p class="work-kind">{project.tags[0]}</p>}
-					<h3 class="project-title">{project.name}</h3>
-					<p class="project-tagline">{project.tagline}</p>
-					<p class="project-summary">{project.summary}</p>
-					{project.role && <p class="meta">My part: {project.role}</p>}
-					{project.tags && project.tags.length > 1 && (
-						<ul class="tags">
-							{project.tags.slice(1).map((tag) => (
-								<li><span class="tag">{tag}</span></li>
-							))}
-						</ul>
-					)}
-					{project.links && project.links.length > 0 && (
-						<ul class="project-links">
-							{project.links.map((link) => (
-								<li><a class="button" href={href(link.url)} target="_blank" rel="noopener">{link.label} <span aria-hidden="true">↗</span></a></li>
-							))}
-						</ul>
-					)}
-				</article>
-			</Row>
-		))
-	}
+	{projects.length > 0 && (
+		<Row label="Projects">
+			<ul class="entries timeline">
+				{chronologicalProjects.map((project) => (
+					<li class="entry" id={`project-${project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+						<h3 class="entry-title">{project.name}</h3>
+						<span class="entry-when">{project.period}</span>
+						<p class="entry-desc">{project.tagline}</p>
+						<p class="entry-desc">{project.summary}</p>
+						{project.role && <p class="entry-desc">My part: {project.role}</p>}
+						{project.tags && project.tags.length > 0 && (
+							<ul class="tags entry-extra">
+								{project.tags.map((tag) => <li><span class="tag">{tag}</span></li>)}
+							</ul>
+						)}
+						{project.links && project.links.length > 0 && (
+							<ul class="entry-extra inline-links">
+								{project.links.map((link) => <li><a class="link" href={href(link.url)} target="_blank" rel="noopener">{link.label}</a></li>)}
+							</ul>
+						)}
+					</li>
+				))}
+			</ul>
+		</Row>
+	)}
 </Base>

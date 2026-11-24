@@ -331,17 +331,6 @@ button {
 	font-weight: 600;
 }
 
-.work-kind {
-	display: inline-block;
-	padding: 0.2rem 0.6rem;
-	border-radius: 999px;
-	background: hsl(var(--hue) 60% 50% / 0.14);
-	color: hsl(var(--hue) 55% 32%);
-	font-size: 0.75rem;
-	font-weight: 600;
-}
-:root:not([data-theme='light']) .work-kind { color: hsl(var(--hue) 70% 75%); }
-
 /* ------------------------------------------------------------------ */
 /* Lists of entries: posts, projects, publications, positions          */
 /* ------------------------------------------------------------------ */
@@ -1272,44 +1261,6 @@ pre {
 	margin-top: 0.75rem;
 	color: var(--muted);
 	font-size: 0.9375rem;
-}
-
-.project-card {
-	display: grid;
-	gap: 0.6rem;
-	justify-items: start;
-	padding: 1.25rem 1.35rem 1.4rem;
-	border: 1px solid var(--line);
-	border-radius: 1rem;
-	--glow-base: 0.12;
-}
-.project-title {
-	font-family: var(--serif);
-	font-size: 1.375rem;
-	font-weight: 400;
-	line-height: 1.2;
-	letter-spacing: -0.015em;
-	text-wrap: balance;
-}
-.project-tagline {
-	color: var(--text);
-	font-weight: 500;
-}
-.project-summary {
-	color: var(--text-2);
-	font-size: 0.9375rem;
-}
-.project-links {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.4rem;
-	margin-top: 0.25rem;
-	padding: 0;
-	list-style: none;
-}
-.project-links .button {
-	padding: 0.35rem 0.8rem;
-	font-size: 0.8125rem;
 }
 
 /* Experience as a timeline: a rail with one marker per role. */
