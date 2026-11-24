@@ -1,5 +1,6 @@
 ---
 import PublicationList from '../components/PublicationList.astro';
+import ContactInfo from '../components/ContactInfo.astro';
 import Row from '../components/Row.astro';
 import { awards, certifications, contactEmailEncoded, education, experience, languages, researchExperience, skills, summary } from '../data/cv';
 import { profile } from '../data/profile';
@@ -22,7 +23,7 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 			<ul class="inline-links no-print" style="margin-top: 1.5rem; font-size: 0.875rem">
 				{contactEmailEncoded && (
 					<li data-nosnippet>
-						<button class="text-button" type="button" data-contact-email={contactEmailEncoded}>Show contact email</button>
+						<ContactInfo label="Show contact email" />
 					</li>
 				)}
 				{profile.cvPdfs.map((document) => (
@@ -284,14 +285,4 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 
 <script>
 	document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
-	const contactButton = document.querySelector<HTMLButtonElement>('[data-contact-email]');
-	contactButton?.addEventListener('click', () => {
-		const address = atob(contactButton.dataset.contactEmail!);
-		const link = document.createElement('a');
-		link.className = 'link';
-		link.href = `mailto:${address}`;
-		link.textContent = address;
-		contactButton.replaceWith(link);
-		link.focus();
-	});
 </script>

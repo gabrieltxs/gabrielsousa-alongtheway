@@ -22,23 +22,25 @@ try {
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
     }
   }
-  const response = await page.goto(base + '/cv/');
-  const address = Buffer.from(contactEmailEncoded, 'base64').toString('utf8');
-  assert(address.includes('@'));
-  assert.equal((await response.text()).includes(address), false);
-  assert.equal((await page.locator('body').innerText()).includes(address), false);
-  assert.equal(await page.locator('a[href^="mailto:"]').count(), 0);
-  assert.deepEqual(await page.locator('[aria-labelledby="section-summary"] .row-body p').allTextContents(), summary);
-  await page.getByRole('button', { name: 'Show contact email' }).focus();
-  await page.keyboard.press('Enter');
-  const link = page.getByRole('link', { name: address, exact: true });
-  assert.equal(await link.getAttribute('href'), `mailto:${address}`);
-  assert(await link.evaluate(el => el === document.activeElement));
-  await page.reload();
-  assert.equal(await page.locator('a[href^="mailto:"]').count(), 0);
-  assert.equal(await page.getByRole('button', { name: 'Show contact email' }).isVisible(), true);
+  for (const [path, label] of [['/', 'Show contact info'], ['/cv/', 'Show contact email']]) {
+    const response = await page.goto(base + path);
+    const address = Buffer.from(contactEmailEncoded, 'base64').toString('utf8');
+    assert(address.includes('@'));
+    assert.equal((await response.text()).includes(address), false);
+    assert.equal((await page.locator('body').innerText()).includes(address), false);
+    assert.equal(await page.locator('a[href^="mailto:"]').count(), 0);
+    if (path === '/cv/') assert.deepEqual(await page.locator('[aria-labelledby="section-summary"] .row-body p').allTextContents(), summary);
+    await page.getByRole('button', { name: label }).focus();
+    await page.keyboard.press('Enter');
+    const link = page.getByRole('link', { name: address, exact: true });
+    assert.equal(await link.getAttribute('href'), `mailto:${address}`);
+    assert(await link.evaluate(el => el === document.activeElement));
+    await page.reload();
+    assert.equal(await page.locator('a[href^="mailto:"]').count(), 0);
+    assert.equal(await page.getByRole('button', { name: label }).isVisible(), true);
+  }
   assert.deepEqual(errors, []);
-  console.log('Header positions match across five pages at four widths; CV email is absent initially, reveals by keyboard, and hides again on reload.');
+  console.log('Header positions match across five pages at four widths; Home and CV email is absent initially, reveals by keyboard, and hides again on reload.');
 } finally {
   await browser.close();
 }

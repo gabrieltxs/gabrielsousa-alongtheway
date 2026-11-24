@@ -1,0 +1,24 @@
+---
+import { contactEmailEncoded } from '../data/cv';
+const { label = 'Show contact info' } = Astro.props;
+---
+
+{contactEmailEncoded && (
+	<span data-nosnippet>
+		<button class="text-button" type="button" data-contact-email={contactEmailEncoded}>{label}</button>
+	</span>
+)}
+
+<script>
+	document.querySelectorAll<HTMLButtonElement>('[data-contact-email]').forEach((button) => {
+		button.addEventListener('click', () => {
+			const address = atob(button.dataset.contactEmail!);
+			const link = document.createElement('a');
+			link.className = 'link';
+			link.href = `mailto:${address}`;
+			link.textContent = address;
+			button.replaceWith(link);
+			link.focus();
+		});
+	});
+</script>

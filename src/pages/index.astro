@@ -2,6 +2,7 @@
 // LinkedIn and GitHub use the official marks from Font Awesome Free (icons CC BY 4.0).
 import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import UpdatesBanner from '../components/UpdatesBanner.astro';
+import ContactInfo from '../components/ContactInfo.astro';
 import { certifications } from '../data/cv';
 import { news } from '../data/news';
 import { education } from '../data/cv';
@@ -78,6 +79,9 @@ const jsonLd = {
 					</li>
 				))}
 			</ul>
+			<div style="margin-top: 1rem; font-size: 0.875rem; overflow-wrap: anywhere">
+				<ContactInfo />
+			</div>
 		</header>
 
 		<div class="card-content">
