@@ -1137,8 +1137,22 @@ pre {
 .card-content { min-width: 0; }
 .card-content > .card-statement:first-child {
 	text-align: center;
-	text-wrap: balance;
+	text-wrap: wrap;
 }
+.card-subtitle {
+	margin-top: 0.65rem;
+	font-family: var(--serif);
+	font-size: clamp(1.4rem, 2.16vw, 2.08rem);
+	font-weight: 300;
+	line-height: 1.25;
+	text-align: center;
+	text-wrap: wrap;
+}
+.card-subtitle span {
+	color: #8fd7d5;
+	white-space: nowrap;
+}
+:root[data-theme='light'] .card-subtitle span { color: #246e70; }
 /* Identity stays together on the left; the reading column starts at the top. */
 .card-id {
 	padding-top: clamp(2rem, 5vh, 4rem);
@@ -1256,6 +1270,7 @@ pre {
 @media (min-width: 59.001rem) and (max-height: 800px) {
 	.home-page > main { padding-block: 0.5rem; }
 	.card-statement { font-size: clamp(1.65rem, 2.5vw, 2rem); }
+	.card-subtitle { font-size: clamp(1.32rem, 2vw, 1.6rem); }
 	.card-statement-2 { font-size: 1.25rem; margin-top: 0.75rem; }
 	.card-about { margin-top: 0.875rem; gap: 0.625rem; font-size: 0.9375rem; line-height: 1.45; }
 	.card-photo { width: 8.5rem; }

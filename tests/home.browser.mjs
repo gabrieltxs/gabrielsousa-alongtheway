@@ -13,7 +13,7 @@ try {
   await page.reload();
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.equal(await page.locator('.icon-links a').count(), 4);
-  assert.equal(await page.locator('.card-statement').first().innerText(), 'I research how language models learn a domain and its tasks, and build the experiments to test them, across pre-training, post-training, and serving.');
+  assert.equal(await page.locator('.card-statement').first().innerText(), 'I research how language models learn a domain and its tasks');
   assert.equal(await page.locator('.card-statement-2 a').innerText(), 'Here I write about what I’ve learned along the way.');
   assert.equal(await page.locator('.scroll-tools').count(), 0);
   for (const theme of ['dark', 'light']) {
