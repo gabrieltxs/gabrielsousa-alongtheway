@@ -13,6 +13,7 @@ try {
   await page.reload();
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.equal(await page.locator('.icon-links a').count(), 4);
+  assert.equal(await page.locator('.card-about p').count(), 4);
   assert.equal(await page.locator('.card-statement').first().innerText(), 'I research how language models learn a new domain and its tasks.');
   assert.equal(await page.locator('.card-statement-2 a').innerText(), 'Here I write about what I’ve learned along the way.');
   assert.equal(await page.locator('.scroll-tools').count(), 0);
@@ -31,6 +32,7 @@ try {
           sideBySide: id.right < title.left,
           order: title.bottom <= about.top && about.bottom <= invitation.top && invitation.bottom <= cards.top,
           cardsVisible: cards.bottom <= innerHeight,
+          headerClear: title.top >= box('body > header').bottom,
           justified: getComputedStyle(document.querySelector('.card-about')).textAlign === 'justify',
         };
       });
@@ -38,7 +40,11 @@ try {
       assert(layout.order, `${theme} ${width} reading order`);
       if (width >= 960) {
         assert(layout.sideBySide && layout.justified, `${theme} ${width} columns`);
-        assert(!layout.overflowY && layout.cardsVisible, `${theme} ${width}x${height}: ${JSON.stringify(layout)}`);
+        assert(layout.headerClear, `${theme} ${width} title overlaps header`);
+        // The full four-paragraph biography scrolls naturally on shorter desktops.
+        if (width >= 1680 && height >= 1050) {
+          assert(!layout.overflowY && layout.cardsVisible, `${theme} ${width}x${height}: ${JSON.stringify(layout)}`);
+        }
       }
       if ([390, 1366, 1920].includes(width)) await page.screenshot({ path: `/tmp/home-columns-${theme}-${width}.png`, fullPage: true });
     }
@@ -78,5 +84,5 @@ try {
     }
   }
   assert.deepEqual(errors, []);
-  console.log('Home columns, first-screen desktop content, reading order, theme persistence and post links passed.');
+  console.log('Home columns, full biography, reading order, theme persistence and post links passed.');
 } finally { await browser.close(); }

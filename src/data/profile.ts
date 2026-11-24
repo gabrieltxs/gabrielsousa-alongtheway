@@ -27,10 +27,12 @@ export const profile = {
 	description:
 		'Gabriel Sousa, M.Sc., is an applied AI research scientist working on domain-adaptive pre-training, post-training and alignment of language models.',
 
-	// The "About" block on the home page. One string per paragraph; keep it short.
+	// The "About" block on the home page. One string per paragraph.
 	about: [
-		'I am a senior applied AI scientist at Deloitte, where I lead post-training and alignment research for a proprietary conversational AI system. Before that, I led Deloitte’s technical work on PetroNeMo, a Portuguese-language model for the oil and gas industry built with Petrobras and NVIDIA and presented at NVIDIA GTC 2025.',
-		'My research spans the training stack: continued pre-training and data mixtures for specialized domains, the subject of my M.Sc. thesis at the Federal University of Goiás, and post-training with synthetic and preference data. With CEIA-UFG and CoreJur, I also study evidence selection, context compression and typed decision models for legal NLP.',
+		"Applied AI research scientist (M.Sc.) working across the language-model training stack: domain-adaptive pre-training, data curation and synthetic data, supervised fine-tuning, reinforcement-learning alignment, and evaluation of deployed systems in regulated environments.",
+		"At Deloitte, I lead the technical work on PetroNeMo, the largest Brazilian language model specialized in oil and gas, built with Petrobras and NVIDIA and presented at NVIDIA GTC 2025. I have carried the model through the full training stack, solving challenges at every stage: corpus curation over billions of tokens, tokenizer adaptation and continued pre-training on Brazilian HPC clusters (including cluster-level optimization in legacy environments), followed by post-training and alignment with supervised fine-tuning, frontier-model distillation and reinforcement learning using NVIDIA NeMo, and inference acceleration for serving. The resulting domain-specialized reasoning models outperform state-of-the-art models on internal benchmarks.",
+		"My M.Sc. research at the Federal University of Goiás studied industrial scaling laws for continual pre-training: how model scale, token exposure and intra-domain data mixtures interact, and how to allocate a training budget within a domain.",
+		"With CEIA (Center of Excellence in Artificial Intelligence, UFG) and CoreJur, I research legal NLP: evidence selection and context compression in long documents and typed decision models, testing novel techniques and validating their practical viability in the domain. There I train System-One and small language models that match state-of-the-art models in accuracy on the domain's tasks while reducing operating costs.",
 	],
 
 	// Shown as a list on the Research page.
