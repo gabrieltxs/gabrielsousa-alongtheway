@@ -8,6 +8,9 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(base);
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+  await page.locator('[data-theme-toggle]').click();
+  await page.reload();
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.equal(await page.locator('.icon-links a').count(), 4);
   assert.equal(await page.locator('.card-statement').first().innerText(), 'I research how language models learn a domain, from pre-training to alignment.');

@@ -69,7 +69,7 @@ const imageURL = new URL(href('/og.png'), Astro.site);
 {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
 <!--
-	The site is light by default. A visitor who switches to the dark theme
+	The site is dark by default. A visitor who switches to the light theme
 	keeps it on later visits; this runs before the page paints.
 -->
 <script is:inline>
@@ -78,7 +78,7 @@ const imageURL = new URL(href('/og.png'), Astro.site);
 		try {
 			saved = localStorage.getItem('theme');
 		} catch (e) {}
-		document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
+		document.documentElement.dataset.theme = saved === 'light' ? 'light' : 'dark';
 	})();
 </script>
 
