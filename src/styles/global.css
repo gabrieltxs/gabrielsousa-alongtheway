@@ -1129,9 +1129,10 @@ pre {
 }
 .card-home {
 	display: grid;
-	grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr);
+	grid-template-columns: minmax(13rem, 17rem) minmax(0, max-content);
+	justify-content: center;
 	align-items: start;
-	gap: clamp(2rem, 5vw, 4rem);
+	gap: clamp(1.5rem, 3vw, 2.5rem);
 	width: 100%;
 }
 .card-content {
@@ -1142,7 +1143,7 @@ pre {
 .card-reading {
 	display: grid;
 	width: fit-content;
-	max-width: calc(100% - 2 * clamp(0.25rem, 1.5vw, 1.5rem));
+	max-width: 100%;
 	margin-inline: auto;
 }
 .card-reading > :not(.card-updates) { font-family: 'Times New Roman', Times, serif; }
@@ -1274,6 +1275,7 @@ pre {
 }
 .home-page .footer-main { gap: 0.5rem 1.5rem; }
 @media (max-width: 59rem) {
+	.card-reading { max-width: calc(100% - 2 * clamp(0.25rem, 1.5vw, 1.5rem)); }
 	.card-home { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
 	.card-id { max-width: 24rem; margin-inline: auto; padding-top: 0; }
 	.card-home { max-width: 46rem; margin-inline: auto; }
