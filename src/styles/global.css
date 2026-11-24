@@ -1166,9 +1166,9 @@ pre {
 .card-subtitle span { white-space: nowrap; }
 :root[data-theme='light'] .card-subtitle span,
 :root[data-theme='light'] .card-about .text-highlight { color: #246e70; }
-/* Identity stays together on the left; the reading column starts at the top. */
+/* Keep the portrait and identity together, aligned with the research title. */
 .card-id {
-	padding-top: clamp(2rem, 5vh, 4rem);
+	padding-top: 0;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -1292,6 +1292,17 @@ pre {
 
 @media (min-width: 59.001rem) and (max-width: 64rem) and (max-height: 800px) {
 	.card-home { grid-template-columns: 13rem minmax(0, 1fr); gap: 2rem; }
+}
+
+@media (min-width: 80rem) and (min-height: 50.001rem) {
+	.card-home { grid-template-columns: minmax(17rem, 22rem) minmax(0, max-content); }
+	.card-photo { width: 15rem; margin-bottom: 1.25rem; }
+	.card-name { font-size: 1.5rem; }
+	.card-role { font-size: 1.125rem; line-height: 1.8; }
+	.icon-links { gap: 0.625rem; margin-top: 1.5rem; }
+	.icon-link { min-width: 4rem; padding: 0.8rem 0.65rem 0.7rem; gap: 0.4rem; }
+	.icon-link svg { width: 1.8rem; height: 1.8rem; }
+	.icon-link span { font-size: 0.875rem; }
 }
 
 /* ------------------------------------------------------------------ */
