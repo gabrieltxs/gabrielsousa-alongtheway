@@ -1124,7 +1124,7 @@ pre {
 .home-page > main {
 	flex: 1;
 	display: grid;
-	align-items: center;
+	align-items: start;
 	padding-block: clamp(0.75rem, 2vh, 1.5rem);
 }
 .card-home {
@@ -1135,9 +1135,12 @@ pre {
 	width: 100%;
 }
 .card-content { min-width: 0; }
+.card-content > :not(.card-updates) {
+	margin-inline: clamp(0.25rem, 1.5vw, 1.5rem);
+}
 .card-content > .card-statement:first-child {
 	text-align: center;
-	text-wrap: balance;
+	text-wrap: wrap;
 }
 .card-subtitle {
 	margin-top: 0.65rem;
@@ -1146,7 +1149,7 @@ pre {
 	font-weight: 300;
 	line-height: 1.25;
 	text-align: center;
-	text-wrap: balance;
+	text-wrap: wrap;
 }
 .card-subtitle span {
 	color: #8fd7d5;
