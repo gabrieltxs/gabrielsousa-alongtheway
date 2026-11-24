@@ -1207,14 +1207,14 @@ pre {
 	color: var(--text-2);
 }
 .card-statement-2 a {
-	color: #a3ff12;
+	color: #8fd7d5;
 	text-decoration: underline;
 	text-decoration-thickness: 1px;
 	text-underline-offset: 0.18em;
 	text-decoration-color: currentColor;
 	transition: text-decoration-color 0.2s ease;
 }
-:root[data-theme='light'] .card-statement-2 a { color: #398000; }
+:root[data-theme='light'] .card-statement-2 a { color: #246e70; }
 .card-statement-2 a:hover { text-decoration-thickness: 2px; }
 .card-about {
 	margin-top: clamp(1.5rem, 3vh, 2rem);
