@@ -1,6 +1,7 @@
 ---
 title: 'Compressing legal context: what survives, what breaks, and what it saves'
 shortTitle: Legal context compression
+plain: "Cutting the legal text an AI has to read by about 40% costs only a few points of accuracy, but numbers and dates are the first to suffer."
 description: 'Protected spans plus LLMLingua-2 cut generator input by 39.20% for a 3.24-point accuracy loss on 10,834 legal questions. Where the savings come from, and why numbers and dates break first.'
 pubDate: 2026-11-23
 kind: article

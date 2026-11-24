@@ -11,9 +11,11 @@ interface Props {
 	// 'month' when it stands alone ("Nov 2026").
 	dates?: 'day' | 'month';
 	archive?: boolean;
+	// Show the post's image beside it, when it has one.
+	thumbs?: boolean;
 }
 
-const { posts, dates = 'month', archive = false } = Astro.props;
+const { posts, dates = 'month', archive = false, thumbs = archive } = Astro.props;
 
 function when(date: Date): string {
 	return dates === 'day' ? shortDate(date) : monthYear(isoDate(date).slice(0, 7));
@@ -22,8 +24,11 @@ function when(date: Date): string {
 
 <ul class:list={['entries entries-linked', { archive }]}>
 	{
-		posts.map((post) => (
-			<li class="entry entry-linked" data-keywords={post.data.tags.map(tagSlug).join(' ')}>
+		posts.map((post, index) => (
+			<li class:list={['entry entry-linked glow', { 'entry-thumbed': thumbs && post.data.image }]} style={`--hue: ${[212, 38, 160][index % 3]}`} data-keywords={post.data.tags.map(tagSlug).join(' ')}>
+				{thumbs && post.data.image && (
+					<img class="entry-thumb" src={href(post.data.image)} alt="" loading="lazy" decoding="async" />
+				)}
 				<h3 class="entry-title">
 					<a class="entry-link" href={href(postPath(post))}>
 						{post.data.title}
@@ -34,7 +39,14 @@ function when(date: Date): string {
 				<time class="entry-when" datetime={isoDate(post.data.pubDate)}>
 					{when(post.data.pubDate)}
 				</time>
-				<p class="entry-desc">{post.data.description}</p>
+				{post.data.plain ? (
+					<>
+						<p class="entry-plain">{post.data.plain}</p>
+						{archive && <p class="entry-desc">{post.data.description}</p>}
+					</>
+				) : (
+					<p class="entry-desc">{post.data.description}</p>
+				)}
 				{archive && <ul class="tags entry-extra" aria-label="Keywords">
 					{post.data.tags.map(tag => <li><a class="tag" data-keyword={tagSlug(tag)} href={href(`/tags/${tagSlug(tag)}/`)}>{tag}</a></li>)}
 				</ul>}
@@ -48,12 +60,12 @@ function when(date: Date): string {
 	.archive .entry {
 		margin-inline: 0;
 		padding: clamp(1rem, 2.5vw, 1.5rem);
-		border: 1px solid var(--line-strong);
-		border-left: 3px solid var(--accent);
-		background: var(--raised);
+		border: 1px solid var(--line);
+		border-radius: 1rem;
+		--glow-base: 0.1;
+		--glow-ground: var(--raised);
 	}
 	.archive .entry + .entry { margin-top: 1rem; }
-	.archive .entry:hover { background: var(--hover); }
 	.archive .entry[hidden] { display: none; }
 	.archive .entry-title { font-size: 1.125rem; font-weight: 600; }
 	.archive .entry-when { font-size: .875rem; color: var(--text-2); }

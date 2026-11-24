@@ -26,9 +26,9 @@ const { pathname } = Astro.url;
 		<nav class="site-nav" aria-label="Main">
 			<ul>
 				{
-					nav.map((item) => (
+					nav.map((item, index) => (
 						<li>
-							<a href={href(item.path)} aria-current={isCurrent(pathname, item.path) ? 'page' : undefined}>
+							<a class="glow" style={`--hue: ${[212, 38, 160, 268, 190, 20][index % 6]}`} href={href(item.path)} aria-current={isCurrent(pathname, item.path) ? 'page' : undefined}>
 								{item.label}
 							</a>
 						</li>
@@ -82,15 +82,21 @@ const { pathname } = Astro.url;
 	}
 	.site-nav a {
 		display: block;
-		padding: 0.5rem 0.875rem;
-		border-radius: 0.5rem;
+		padding: 0.5rem 0.9rem;
+		border: 1px solid transparent;
+		border-radius: 999px;
 		font-weight: 500;
-		transition: color 0.15s ease, background-color 0.15s ease;
+		--glow-base: 0;
+		--glow-size: 7rem;
+		transition: color 0.2s ease, border-color 0.2s ease;
 	}
-	.site-nav a:hover { background: var(--hover); }
+	.site-nav a:hover { color: var(--text); }
+	/* The current page keeps a soft tint that drifts on its own. */
 	.site-nav a[aria-current='page'] {
-		background: var(--accent);
-		color: var(--bg);
+		--glow-base: 0.22;
+		color: var(--text);
+		border-color: hsl(var(--hue) 60% 50% / 0.35);
+		animation: glow-drift 9s ease-in-out infinite alternate;
 	}
 	.theme-toggle { justify-self: end; }
 	@media (max-width: 64rem) {

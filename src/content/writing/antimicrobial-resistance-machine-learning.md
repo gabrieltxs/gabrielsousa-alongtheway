@@ -1,6 +1,7 @@
 ---
 title: 'From genomes to resistance predictions: my undergraduate machine learning research'
 shortTitle: Genomes and resistance
+plain: "Can a computer tell whether bacteria will resist an antibiotic just by reading their DNA? My undergraduate thesis tested that."
 description: 'My 2022 Computer Engineering thesis used k-mer representations and six classifiers to predict antimicrobial resistance in Pseudomonas aeruginosa. The methods, the results, and what I would do differently.'
 pubDate: 2026-11-23
 kind: article

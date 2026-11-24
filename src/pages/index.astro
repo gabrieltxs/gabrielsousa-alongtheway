@@ -1,8 +1,10 @@
 ---
-import Row from '../components/Row.astro';
+// LinkedIn and GitHub use the official marks from Font Awesome Free (icons CC BY 4.0).
+import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 import UpdatesBanner from '../components/UpdatesBanner.astro';
-import { certifications, education } from '../data/cv';
+import { certifications } from '../data/cv';
 import { news } from '../data/news';
+import { education } from '../data/cv';
 import { activeLinks, profile } from '../data/profile';
 import { projects } from '../data/projects';
 import Base from '../layouts/Base.astro';
@@ -13,6 +15,24 @@ import { collectUpdates } from '../lib/updates';
 const allPosts = await getPosts();
 const updates = collectUpdates(allPosts, news, projects, certifications);
 const links = activeLinks();
+
+// The profile links under the name, as icons. Generic line icons, one per link.
+const icons: Record<string, string> = {
+	cv: '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+	lattes: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6"/>',
+};
+// Official brand marks, drawn as a single flat fill in the text colour.
+const brands: Record<string, { width: number; height: number; path: string }> = {
+	linkedin: { width: faLinkedinIn.icon[0], height: faLinkedinIn.icon[1], path: String(faLinkedinIn.icon[4]) },
+	github: { width: faGithub.icon[0], height: faGithub.icon[1], path: String(faGithub.icon[4]) },
+};
+const iconLinks = [
+	{ key: 'cv', label: 'CV', url: href('/cv/'), external: false },
+	...['linkedin', 'lattes', 'github']
+		.map((key) => links.find((link) => link.key === key))
+		.filter((link) => link !== undefined)
+		.map((link) => ({ key: link.key, label: link.label, url: link.url, external: true })),
+];
 
 // Tells search engines who this site is about and which profiles are yours.
 const siteUrl = new URL(href('/'), Astro.site).toString();
@@ -35,64 +55,42 @@ const jsonLd = {
 ---
 
 <Base jsonLd={jsonLd}>
-	<div class="home">
-	<section class="row hero">
-		<div>
-			<img class="portrait" src={href('/1649783605466.jpg')} alt={`Portrait of ${profile.name}`} width="400" height="400" fetchpriority="high" decoding="async" />
-		</div>
-		<div>
-			<h1 class="hero-name">{profile.displayName}</h1>
-			<p class="hero-role">{profile.tagline}</p>
-			<p class="hero-statement">{profile.statement}{' '}<a class="writing-invitation" href={href('/writing/')}>Here I write about what I’ve learned along the way.</a></p>
-			<ul class="inline-links hero-links">
-				<li><a class="link" href={href('/cv/')}>CV</a></li>
-				{
-					links.map((link) => (
-						<li>
-							<a class="link" href={link.url} target="_blank" rel="me noopener">
-								{link.label}
-							</a>
-						</li>
-					))
-				}
-				{
-					profile.email && (
-						<li>
-							<a class="link" href={`mailto:${profile.email}`}>
-								Email
-							</a>
-						</li>
-					)
-				}
+	<div class="card-home">
+		<header class="card-id">
+			<img class="card-photo" src={href('/1649783605466.jpg')} alt={`Portrait of ${profile.name}`} width="400" height="400" fetchpriority="high" decoding="async" />
+			<h1 class="card-name">{profile.displayName}</h1>
+			<p class="card-role">{profile.role} at {profile.employer} · {profile.location}</p>
+			<ul class="icon-links">
+				{iconLinks.map((link) => (
+					<li>
+						<a class="icon-link glow" style="--hue: 212" href={link.url} {...(link.external ? { target: '_blank', rel: 'me noopener' } : {})}>
+							{brands[link.key] ? (
+								<svg class="brand-mark" viewBox={`0 0 ${brands[link.key].width} ${brands[link.key].height}`} aria-hidden="true" fill="currentColor"><path d={brands[link.key].path} /></svg>
+							) : (
+								<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={icons[link.key]} />
+							)}
+							<span>{link.label}</span>
+						</a>
+					</li>
+				))}
 			</ul>
-		</div>
-	</section>
+		</header>
 
-	<Row label="About">
-		{profile.about.map((paragraph) => <p>{paragraph}</p>)}
-		<p>
-			<a class="link" href={href('/research/')}>Research focus and projects</a>
+		<p class="card-statement">{profile.statement}</p>
+		<p class="card-statement card-statement-2">
+			<a href={href('/writing/')}>Here I write about what I’ve learned along the way.</a>
 		</p>
-	</Row>
 
-	{updates.length > 0 && <div class="home-updates"><Row label="Latest updates"><UpdatesBanner items={updates} /></Row></div>}
+		<div class="card-about">
+			{profile.about.map((paragraph) => <p>{paragraph}</p>)}
+		</div>
 
+
+		{updates.length > 0 && (
+			<section class="card-updates" aria-labelledby="latest">
+				<h2 id="latest">Latest</h2>
+				<UpdatesBanner items={updates} />
+			</section>
+		)}
 	</div>
 </Base>
-
-<style>
-	.writing-invitation {
-		color: #a3ff12;
-		text-decoration-thickness: 0.04em;
-		text-underline-offset: 0.12em;
-	}
-
-	:global(:root[data-theme='light']) .writing-invitation {
-		color: #398000;
-	}
-
-	.writing-invitation:hover,
-	.writing-invitation:focus-visible {
-		text-decoration-line: underline;
-	}
-</style>

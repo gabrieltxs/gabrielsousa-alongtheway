@@ -1,6 +1,7 @@
 ---
 title: 'System-One models for legal evidence: inside the D1–D4 experiments'
 shortTitle: System-One evidence
+plain: "Thirty-five experiments on where a small, fast decision model helps a larger AI answer questions about legal documents."
 description: 'Thirty-five conditions on two H100 GPUs test where a System-One model adds value in legal question answering: passage selection, proof scope, reading sufficiency and operand binding.'
 pubDate: 2026-11-23
 kind: article

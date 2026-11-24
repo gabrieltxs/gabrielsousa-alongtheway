@@ -43,6 +43,33 @@ const isHome = isCurrent(Astro.url.pathname, '/');
 		});
 	}
 
+	// Glow: the light under the pointer eases toward it instead of jumping.
+	if (window.matchMedia('(hover: hover)').matches) {
+		const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		document.querySelectorAll<HTMLElement>('.glow').forEach((el) => {
+			let x = 0, y = 0, tx = 0, ty = 0, frame = 0;
+			const step = () => {
+				x += (tx - x) * (still ? 1 : 0.12);
+				y += (ty - y) * (still ? 1 : 0.12);
+				el.style.setProperty('--mx', `${x}px`);
+				el.style.setProperty('--my', `${y}px`);
+				frame = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(step) : 0;
+			};
+			el.addEventListener('pointerenter', (event) => {
+				const box = el.getBoundingClientRect();
+				x = tx = event.clientX - box.left;
+				y = ty = event.clientY - box.top;
+				step();
+			});
+			el.addEventListener('pointermove', (event) => {
+				const box = el.getBoundingClientRect();
+				tx = event.clientX - box.left;
+				ty = event.clientY - box.top;
+				if (!frame) frame = requestAnimationFrame(step);
+			});
+		});
+	}
+
 	document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
 		if (['http:', 'https:'].includes(link.protocol) &&
 			(link.origin !== window.location.origin || link.closest('.post'))) {

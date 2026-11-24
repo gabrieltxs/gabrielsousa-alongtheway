@@ -3,6 +3,7 @@ title: "Master's thesis defense: approved"
 shortTitle: "Master's defense"
 image: /masters-thesis.jpeg
 imageAlt: "A group photo from my master's thesis defense at UFG."
+plain: "I finished my master's degree, on how to choose the right mix of training data when teaching an AI model an industrial field."
 description: "I defended and passed my master's thesis at UFG, on scaling laws and data mixtures for continual pre-training of language models in industrial domains."
 pubDate: 2026-05-06
 updatedDate: 2026-11-23

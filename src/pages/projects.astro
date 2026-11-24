@@ -25,31 +25,29 @@ const description = 'Applied work on language models: domain-adaptive pre-traini
 	}
 
 	{
-		projects.map((project) => (
+		projects.map((project, index) => (
 			<Row label={project.period} id={`project-${project.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
-				<h3 class="entry-title">{project.name}</h3>
-				<p>{project.summary}</p>
-				{project.role && <p class="meta">My part: {project.role}</p>}
-				{project.tags && project.tags.length > 0 && (
-					<ul class="tags">
-						{project.tags.map((tag) => (
-							<li>
-								<span class="tag">{tag}</span>
-							</li>
-						))}
-					</ul>
-				)}
-				{project.links && project.links.length > 0 && (
-					<ul class="inline-links" style="font-size: 0.875rem">
-						{project.links.map((link) => (
-							<li>
-								<a class="link" href={href(link.url)}>
-									{link.label}
-								</a>
-							</li>
-						))}
-					</ul>
-				)}
+				<article class="project-card glow" style={`--hue: ${[212, 38, 160, 268][index % 4]}`}>
+					{project.tags && project.tags.length > 0 && <p class="work-kind">{project.tags[0]}</p>}
+					<h3 class="project-title">{project.name}</h3>
+					<p class="project-tagline">{project.tagline}</p>
+					<p class="project-summary">{project.summary}</p>
+					{project.role && <p class="meta">My part: {project.role}</p>}
+					{project.tags && project.tags.length > 1 && (
+						<ul class="tags">
+							{project.tags.slice(1).map((tag) => (
+								<li><span class="tag">{tag}</span></li>
+							))}
+						</ul>
+					)}
+					{project.links && project.links.length > 0 && (
+						<ul class="project-links">
+							{project.links.map((link) => (
+								<li><a class="button" href={href(link.url)} target="_blank" rel="noopener">{link.label} <span aria-hidden="true">↗</span></a></li>
+							))}
+						</ul>
+					)}
+				</article>
 			</Row>
 		))
 	}

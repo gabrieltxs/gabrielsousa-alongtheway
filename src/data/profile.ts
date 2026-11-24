@@ -52,7 +52,7 @@ export const profile = {
 	links: {
 		linkedin: 'https://www.linkedin.com/in/gabriel-sousa-xp/',
 		lattes: 'http://lattes.cnpq.br/4244807184243359',
-		github: '',
+		github: 'https://github.com/gabrieltxs',
 		scholar: '',
 		orcid: '',
 		huggingface: '',

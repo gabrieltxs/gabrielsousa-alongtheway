@@ -10,6 +10,8 @@ const writing = defineCollection({
 		title: z.string(),
 		// One or two sentences. Shown in lists, search results and link previews.
 		description: z.string(),
+		// Optional. One sentence in plain words for readers outside the field.
+		plain: z.string().optional(),
 		shortTitle: z.string().optional(),
 		image: z.string().optional(),
 		imageAlt: z.string().optional(),

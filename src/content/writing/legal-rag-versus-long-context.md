@@ -1,6 +1,7 @@
 ---
 title: 'Legal NLP: how Vela reranking closes the gap to long context'
 shortTitle: Vela reranking
+plain: "A smarter way of choosing which passages an AI reads gets it most of the way to the accuracy of reading the whole document."
 description: 'Reranking with a System-One decision model recovers 420 correct legal answers at the same three-passage budget, closing 59% of the gap between dense retrieval and full-context reading.'
 pubDate: 2026-10-14
 updatedDate: 2026-11-23

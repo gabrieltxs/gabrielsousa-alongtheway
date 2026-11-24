@@ -22,9 +22,8 @@ const description = 'Research notes on language models and machine learning: dom
 	</div>
 
 	<Row label="Keywords">
-		<div class="keyword-panel">
-			<h2>Explore by keyword</h2>
-			<p>Choose a topic to filter the archive, or browse all posts below.</p>
+		<details class="keyword-panel">
+			<summary>Filter by keyword <span class="tag-count">{tags.length} topics</span></summary>
 			<nav aria-label="Filter posts by keyword" class="keyword-filters">
 				<a class="tag" data-keyword="" aria-current="true" href={href('/writing/')}>
 					All posts <span class="tag-count">{posts.length}</span>
@@ -35,8 +34,8 @@ const description = 'Research notes on language models and machine learning: dom
 					</a>
 				))}
 			</nav>
-			<p id="filter-status" role="status" aria-live="polite">Showing all {posts.length} posts · newest first</p>
-		</div>
+		</details>
+		<p id="filter-status" role="status" aria-live="polite">Showing all {posts.length} posts · newest first</p>
 	</Row>
 
 	{
@@ -58,8 +57,9 @@ const description = 'Research notes on language models and machine learning: dom
 </Base>
 
 <style>
-	.keyword-panel h2 { font-size: 1.125rem; }
-	.keyword-panel p { color: var(--text-2); margin-top: .5rem; font-size: .9375rem; }
+	.keyword-panel summary { cursor: pointer; font-weight: 500; width: fit-content; }
+	.keyword-panel summary:hover { color: var(--accent); }
+	#filter-status { color: var(--muted); font-size: .875rem; }
 	.keyword-filters { display: flex; flex-wrap: wrap; gap: .65rem; margin-block: 1.25rem; }
 	.keyword-filters .tag {
 		padding: .6rem .85rem;
@@ -84,6 +84,7 @@ const description = 'Research notes on language models and machine learning: dom
 		const selected = filters.find(link => link.dataset.keyword === keyword) || filters[0];
 		if (!selected || !status) return;
 		const active = selected.dataset.keyword || '';
+		if (active) document.querySelector('.keyword-panel')?.setAttribute('open', '');
 		for (const link of filters) {
 			if (link === selected) link.setAttribute('aria-current', 'true');
 			else link.removeAttribute('aria-current');

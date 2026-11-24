@@ -1,6 +1,7 @@
 ---
 title: The Road So Far for System One Models
 shortTitle: System One models
+plain: "A review of 110 studies on small AI models that make one quick, well-defined decision, and of what is still unknown about them."
 description: 'A review of 110 works on typed decision models: capabilities, calibration, reliability, training data, benchmarks, domain results, and the evaluation gaps that remain.'
 pubDate: 2026-11-23
 kind: article

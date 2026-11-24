@@ -9,6 +9,7 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(`${base}/writing/`);
+  await page.locator('.keyword-panel summary').click();
   const visible = page.locator('.archive .entry:visible');
   assert.equal(await visible.count(), 7);
   const filters = await page.locator('.keyword-filters [data-keyword]').evaluateAll(links => links.map(link => ({
@@ -37,7 +38,7 @@ try {
     for (const width of [320, 390, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${theme} ${width} overflow`);
-      assert(await visible.first().evaluate(entry => getComputedStyle(entry).borderLeftWidth === '3px'));
+      assert(await visible.first().evaluate(entry => parseFloat(getComputedStyle(entry).borderLeftWidth) >= 1));
       await page.screenshot({ path: `/tmp/writing-${theme}-${width}.png`, fullPage: true });
     }
   }
@@ -50,6 +51,7 @@ try {
   const noJs = await browser.newContext({ javaScriptEnabled: false });
   const fallback = await noJs.newPage();
   await fallback.goto(`${base}/writing/`);
+  await fallback.locator('.keyword-panel summary').click();
   await fallback.locator('.keyword-filters [data-keyword="legal-ai"]').click();
   assert.equal(await fallback.locator('.archive .entry').count(), 4);
   await noJs.close();

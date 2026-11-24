@@ -18,7 +18,7 @@ interface Props {
 }
 
 const { post, headings, newer, older } = Astro.props;
-const { title, description, pubDate, updatedDate, kind, tags, draft } = post.data;
+const { title, description, plain, pubDate, updatedDate, kind, tags, draft } = post.data;
 
 // The "Footnotes" heading that Markdown adds is left out of the list.
 const toc = headings.filter(
@@ -100,6 +100,9 @@ const jsonLd = {
 				</div>
 				<h1 class="post-title">{title}</h1>
 				<p class="post-standfirst">{description}</p>
+				{plain && (
+					<p class="post-plain"><span class="post-plain-label">In plain words</span>{plain}</p>
+				)}
 				{tags.length > 0 && (
 					<ul class="tags post-keywords" aria-label="Keywords">
 						{tags.map((tag) => (

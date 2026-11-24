@@ -16,7 +16,7 @@ try {
       await page.evaluate(() => scrollTo(0, 500));
       if (path === '/') {
         assert.equal(await page.locator('.scroll-tools, .go-to-top').count(), 0);
-        assert.equal(await page.locator('.home-updates').isVisible(), true);
+        assert.equal(await page.locator('.card-updates').isVisible(), true);
         await page.evaluate(() => scrollTo(0, 0));
         continue;
       }
@@ -39,13 +39,13 @@ try {
   await page.goto(base);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.evaluate(() => scrollTo(0, 500));
-  const home = page.locator('.home [data-updates-banner]');
+  const home = page.locator('.card-home [data-updates-banner]');
   assert.equal(await home.locator('details[open]').count(), 1);
   // Clicking the top edge of either expanded image follows its real link.
   for (const path of ['/', '/writing/antimicrobial-resistance-machine-learning/']) {
     await page.goto(base + path);
     await page.evaluate(() => scrollTo(0, 500));
-    const banner = page.locator(path === '/' ? '.home [data-updates-banner]' : '.scroll-tools [data-updates-banner]');
+    const banner = page.locator(path === '/' ? '.card-home [data-updates-banner]' : '.scroll-tools [data-updates-banner]');
     const card = banner.locator('details').nth(1);
     await card.hover();
     assert.equal(await card.getAttribute('open'), '');

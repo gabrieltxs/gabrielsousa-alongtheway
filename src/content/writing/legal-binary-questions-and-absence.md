@@ -1,6 +1,7 @@
 ---
 title: 'Legal NLP: typed decisions and the meaning of absence'
 shortTitle: Typed legal decisions
+plain: "Asking an AI a legal yes/no question more precisely made it agree with the expected answer far more often, with the same model."
 description: 'Clarifying what a legal yes/no question asks raised agreement with the reference from 36/60 to 57/60 with the same model and the same source windows. Why the proposition matters as much as the model.'
 pubDate: 2026-11-03
 updatedDate: 2026-11-23
