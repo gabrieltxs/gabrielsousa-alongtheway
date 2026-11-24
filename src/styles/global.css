@@ -1,17 +1,17 @@
 /*
   Design tokens
   -------------
-  The default light theme uses paper ground, ink text and a Prussian-blue
-  accent. The optional dark theme uses night-blue ground, chalk text and
+  The default light theme uses cream ground, ink text and a Prussian-blue
+  accent. The optional dark theme uses deep-blue ground, chalk text and
   one warm accent (ipê yellow), used only for links and focus.
   Change the values here and the whole site follows.
 */
 :root {
-	--bg: #0b1118;
-	--raised: #121b26;
+	--bg: #152840;
+	--raised: #1d3450;
 	--text: #e8edf3;
 	--text-2: #b7c1cd;
-	--muted: #8d9aac;
+	--muted: #a5b4c6;
 	--line: rgba(151, 173, 203, 0.16);
 	--line-strong: rgba(151, 173, 203, 0.34);
 	--hover: rgba(151, 173, 203, 0.07);
@@ -34,8 +34,8 @@
 }
 
 :root[data-theme='light'] {
-	--bg: #fafbfc;
-	--raised: #f0f3f6;
+	--bg: #f5f0e6;
+	--raised: #ede6d9;
 	--text: #101a27;
 	--text-2: #354254;
 	--muted: #5d6a7b;
@@ -1146,6 +1146,10 @@ pre {
 	width: 100%;
 }
 .card-content { min-width: 0; }
+.card-content > .card-statement:first-child {
+	text-align: center;
+	text-wrap: balance;
+}
 /* Identity stays together on the left; the reading column starts at the top. */
 .card-id {
 	display: flex;
