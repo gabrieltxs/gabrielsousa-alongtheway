@@ -76,21 +76,19 @@ const jsonLd = {
 			</ul>
 		</header>
 
-		<p class="card-statement">{profile.statement}</p>
-		<p class="card-statement card-statement-2">
-			<a href={href('/writing/')}>Here I write about what I’ve learned along the way.</a>
-		</p>
-
-		<div class="card-about">
-			{profile.about.map((paragraph) => <p>{paragraph}</p>)}
+		<div class="card-content">
+			<p class="card-statement">{profile.statement}</p>
+			<div class="card-about">
+				{profile.about.map((paragraph) => <p>{paragraph}</p>)}
+			</div>
+			<p class="card-statement card-statement-2">
+				<a href={href('/writing/')}>Here I write about what I’ve learned along the way.</a>
+			</p>
+			{updates.length > 0 && (
+				<section class="card-updates" aria-label="Latest updates">
+					<UpdatesBanner items={updates} />
+				</section>
+			)}
 		</div>
-
-
-		{updates.length > 0 && (
-			<section class="card-updates" aria-labelledby="latest">
-				<h2 id="latest">Latest</h2>
-				<UpdatesBanner items={updates} />
-			</section>
-		)}
 	</div>
 </Base>

@@ -10,22 +10,37 @@ try {
   await page.goto(base);
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'light');
   assert.equal(await page.locator('.icon-links a').count(), 4);
+  assert.equal(await page.locator('.card-statement').first().innerText(), 'I research how language models learn a domain, from pre-training to alignment.');
   assert.equal(await page.locator('.card-statement-2 a').innerText(), 'Here I write about what I’ve learned along the way.');
   assert.equal(await page.locator('.scroll-tools').count(), 0);
   for (const theme of ['dark', 'light']) {
     await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
-    for (const width of [320, 390, 832, 900, 1024, 1440, 2544]) {
-      await page.setViewportSize({ width, height: 900 });
+    for (const [width, height] of [[320, 740], [390, 844], [832, 900], [1024, 768], [1280, 720], [1366, 768], [1440, 900], [1920, 1080], [2544, 1400]]) {
+      await page.setViewportSize({ width, height });
       await page.evaluate(() => document.fonts.ready);
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${theme} ${width}`);
-      assert(await page.locator('.card-photo').evaluate(el => {
-        const box = el.getBoundingClientRect();
-        return Math.abs(box.x + box.width / 2 - innerWidth / 2) < 1;
-      }));
-      assert(await page.locator('.card-about').evaluate(el => !!(el.compareDocumentPosition(document.querySelector('.card-updates')) & Node.DOCUMENT_POSITION_FOLLOWING)));
-      if ([390, 1440].includes(width)) await page.screenshot({ path: `/tmp/redesign-home-${theme}-${width}.png`, fullPage: true });
+      const layout = await page.evaluate(() => {
+        const box = selector => document.querySelector(selector).getBoundingClientRect();
+        const id = box('.card-id'), title = box('.card-statement'), about = box('.card-about');
+        const invitation = box('.card-statement-2'), cards = box('.card-updates');
+        return {
+          overflowX: document.documentElement.scrollWidth > innerWidth,
+          overflowY: document.documentElement.scrollHeight > innerHeight + 1,
+          sideBySide: id.right < title.left,
+          order: title.bottom <= about.top && about.bottom <= invitation.top && invitation.bottom <= cards.top,
+          cardsVisible: cards.bottom <= innerHeight,
+          justified: getComputedStyle(document.querySelector('.card-about')).textAlign === 'justify',
+        };
+      });
+      assert.equal(layout.overflowX, false, `${theme} ${width} horizontal overflow`);
+      assert(layout.order, `${theme} ${width} reading order`);
+      if (width >= 960) {
+        assert(layout.sideBySide && layout.justified, `${theme} ${width} columns`);
+        assert(!layout.overflowY && layout.cardsVisible, `${theme} ${width}x${height}: ${JSON.stringify(layout)}`);
+      }
+      if ([390, 1366, 1920].includes(width)) await page.screenshot({ path: `/tmp/home-columns-${theme}-${width}.png`, fullPage: true });
     }
   }
+
   await page.locator('[data-theme-toggle]').click();
   const savedTheme = await page.locator('html').getAttribute('data-theme');
   await page.reload();
@@ -46,5 +61,5 @@ try {
     }
   }
   assert.deepEqual(errors, []);
-  console.log('Redesign home, theme persistence, responsive layout and all seven post summaries/links passed.');
+  console.log('Home columns, first-screen desktop content, reading order, theme persistence and post links passed.');
 } finally { await browser.close(); }

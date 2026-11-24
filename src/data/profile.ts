@@ -18,7 +18,7 @@ export const profile = {
 	location: 'Goiânia, Brazil',
 
 	// The one large sentence on the home page. Keep it to a line or two.
-	statement: 'I research how language models learn a domain, from pre-training to alignment, and carry that research into production.',
+	statement: 'I research how language models learn a domain, from pre-training to alignment.',
 
 	// Shown under your name on the home page.
 	tagline: 'Senior Applied AI Scientist at Deloitte. Goiânia, Brazil.',
