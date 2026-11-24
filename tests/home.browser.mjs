@@ -46,7 +46,7 @@ try {
 
   // Maximizing the window must not add a title line when the reading column is capped.
   let windowedLines;
-  for (const [width, height] of [[1366, 768], [1920, 1080], [2544, 1400]]) {
+  for (const [width, height] of [[1366, 768], [1680, 1050], [1920, 1080], [2544, 1400]]) {
     await page.setViewportSize({ width, height });
     const lines = await page.locator('.card-statement').first().evaluate(element => {
       const range = document.createRange();
@@ -55,6 +55,7 @@ try {
     });
     windowedLines ??= lines;
     assert(lines <= windowedLines, `${width}x${height}: maximizing added a title line`);
+    if (width >= 1680) assert.equal(lines, 1, `${width}x${height}: wide-screen title must fit on one line`);
   }
 
   await page.locator('[data-theme-toggle]').click();
