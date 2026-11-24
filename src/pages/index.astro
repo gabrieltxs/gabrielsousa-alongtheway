@@ -91,12 +91,12 @@ const jsonLd = {
 				<p class="card-statement card-statement-2">
 					<a href={href('/writing/')}>Here I write about what I’ve learned along the way.</a>
 				</p>
+				{updates.length > 0 && (
+					<section class="card-updates" aria-label="Latest updates">
+						<UpdatesBanner items={updates} />
+					</section>
+				)}
 			</div>
-			{updates.length > 0 && (
-				<section class="card-updates" aria-label="Latest updates">
-					<UpdatesBanner items={updates} />
-				</section>
-			)}
 		</div>
 	</div>
 </Base>

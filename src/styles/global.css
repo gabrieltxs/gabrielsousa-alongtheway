@@ -1138,14 +1138,14 @@ pre {
 	min-width: 0;
 	--home-section-gap: clamp(1.5rem, 3vh, 2rem);
 }
-/* The title sets the reading column's intrinsic width; prose follows its edges. */
+/* The title sets the shared width of the prose and latest-updates banner. */
 .card-reading {
 	display: grid;
 	width: fit-content;
 	max-width: calc(100% - 2 * clamp(0.25rem, 1.5vw, 1.5rem));
 	margin-inline: auto;
 }
-.card-reading > * { font-family: 'Times New Roman', Times, serif; }
+.card-reading > :not(.card-updates) { font-family: 'Times New Roman', Times, serif; }
 .card-reading > :not(:first-child) { contain: inline-size; min-width: 0; }
 .card-reading > .card-statement:first-child {
 	text-align: center;
