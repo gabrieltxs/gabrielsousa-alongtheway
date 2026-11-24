@@ -1,10 +1,9 @@
 ---
 import PublicationList from '../components/PublicationList.astro';
 import Row from '../components/Row.astro';
-import { awards, certifications, contactEmailEncoded, education, experience, languages, skills, summary } from '../data/cv';
+import { awards, certifications, contactEmailEncoded, education, experience, languages, researchExperience, skills, summary } from '../data/cv';
 import { profile } from '../data/profile';
 import { publications } from '../data/publications';
-import { researchProjects } from '../data/research';
 import Base from '../layouts/Base.astro';
 import { monthYear, period } from '../lib/dates';
 import { href } from '../lib/paths';
@@ -18,7 +17,7 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 		<div>
 			<h1 class="page-title">Curriculum vitae</h1>
 			<p class="page-intro">
-				{profile.headline}. {profile.role} at {profile.employer}, {profile.location}.
+				{profile.headline}. M.Sc. in Computer Science. {profile.role} at {profile.employer}, {profile.location}.
 			</p>
 			<ul class="inline-links no-print" style="margin-top: 1.5rem; font-size: 0.875rem">
 				{contactEmailEncoded && (
@@ -54,6 +53,9 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 						</li>
 					)
 				}
+				{profile.links.github && (
+					<li><a class="link" href={profile.links.github}>GitHub</a></li>
+				)}
 			</ul>
 		</div>
 	</div>
@@ -100,21 +102,28 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 	}
 
 	{
-		researchProjects.length > 0 && (
+		researchExperience.length > 0 && (
 			<Row label="Research">
 				<ul class="entries">
-					{researchProjects.map((project) => (
+					{researchExperience.map((project) => (
 						<li class="entry">
-							<h3 class="entry-title">{project.role}</h3>
+							<h3 class="entry-title">{project.title}</h3>
 							<span class="entry-when">{period(project.start, project.end)}</span>
 							<p class="entry-desc">
-								{project.organisations}. Project: <em>{project.title}</em>
+								{project.organisation}
 							</p>
 							<ul class="points">
-								{project.points.map((point) => (
+								{project.highlights?.map((point) => (
 									<li>{point}</li>
 								))}
 							</ul>
+							{project.links && (
+								<ul class="entry-extra inline-links">
+									{project.links.map((link) => (
+										<li><a class="link" href={href(link.url)}>{link.label}</a></li>
+									))}
+								</ul>
+							)}
 						</li>
 					))}
 				</ul>
@@ -198,6 +207,13 @@ const description = `Curriculum vitae of ${profile.displayName}, ${profile.headl
 							<p class="entry-title">{award.title}</p>
 							<span class="entry-when">{monthYear(award.date)}</span>
 							<p class="entry-desc">{award.issuer}</p>
+							{award.links && (
+								<ul class="entry-extra inline-links">
+									{award.links.map((link) => (
+										<li><a class="link" href={href(link.url)}>{link.label}</a></li>
+									))}
+								</ul>
+							)}
 						</li>
 					))}
 				</ul>
