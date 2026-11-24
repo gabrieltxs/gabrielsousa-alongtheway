@@ -44,6 +44,19 @@ try {
     }
   }
 
+  // Maximizing the window must not add a title line when the reading column is capped.
+  let windowedLines;
+  for (const [width, height] of [[1366, 768], [1920, 1080], [2544, 1400]]) {
+    await page.setViewportSize({ width, height });
+    const lines = await page.locator('.card-statement').first().evaluate(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return new Set([...range.getClientRects()].map(rect => rect.top)).size;
+    });
+    windowedLines ??= lines;
+    assert(lines <= windowedLines, `${width}x${height}: maximizing added a title line`);
+  }
+
   await page.locator('[data-theme-toggle]').click();
   const savedTheme = await page.locator('html').getAttribute('data-theme');
   await page.reload();
