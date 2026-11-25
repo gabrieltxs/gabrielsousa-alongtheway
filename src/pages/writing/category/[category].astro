@@ -1,0 +1,134 @@
+---
+import PostList from '../../../components/PostList.astro';
+import Row from '../../../components/Row.astro';
+import Base from '../../../layouts/Base.astro';
+import { href } from '../../../lib/paths';
+import { collectTags, getPosts, groupByYear } from '../../../lib/posts';
+
+import { writingCategories, categoryPath } from '../../../data/writing';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	return writingCategories.map(category => ({
+		params: { category: category.id },
+		props: { category, posts: posts.filter(post => post.data.category === category.id) },
+	}));
+}
+const { category, posts } = Astro.props;
+const years = groupByYear(posts, (post) => post.data.pubDate.getUTCFullYear());
+const tags = collectTags(posts);
+
+const description = category.description;
+---
+
+<Base title={`${category.title} · Writing`} description={description}>
+	<div class="row page-head">
+		<div></div>
+		<div>
+			<p class="category-back"><a class="link" href={href('/writing/')}>← Writing categories</a></p>
+			<h1 class="page-title">{category.title}</h1>
+			<p class="page-intro">{description}</p>
+		</div>
+	</div>
+
+	{posts.length > 0 && <Row label="Keywords">
+		<details class="keyword-panel">
+			<summary>Filter by keyword <span class="tag-count">{tags.length} topics</span></summary>
+			<nav aria-label="Filter posts by keyword" class="keyword-filters">
+				<a class="tag" data-keyword="" aria-current="true" href={href(categoryPath(category.id))}>
+					All posts <span class="tag-count">{posts.length}</span>
+				</a>
+				{tags.map(({ tag, slug, count }) => (
+					<a class="tag" data-keyword={slug} href={href(`/tags/${slug}/`)}>
+						{tag} <span class="tag-count">{count}</span>
+					</a>
+				))}
+			</nav>
+		</details>
+		<p id="filter-status" role="status" aria-live="polite">Showing all {posts.length} posts · newest first</p>
+	</Row>}
+
+	{
+		years.map(({ year, items }) => (
+			<Row label={String(year)} id={`year-${year}`}>
+				<PostList posts={items} dates="day" archive />
+			</Row>
+		))
+	}
+
+	{
+		posts.length === 0 && (
+			<Row label="Posts">
+				<p>No posts in this category yet. Explore the other <a class="link" href={href('/writing/')}>writing categories</a>.</p>
+			</Row>
+		)
+	}
+
+</Base>
+
+<style>
+	.category-back { margin-bottom: 1rem; font-size: .875rem; }
+	.keyword-panel summary { cursor: pointer; font-weight: 500; width: fit-content; }
+	.keyword-panel summary:hover { color: var(--accent); }
+	#filter-status { color: var(--muted); font-size: .875rem; }
+	.keyword-filters { display: flex; flex-wrap: wrap; gap: .65rem; margin-block: 1.25rem; }
+	.keyword-filters .tag {
+		padding: .6rem .85rem;
+		font-size: .875rem;
+		line-height: 1.4;
+		border-color: var(--line-strong);
+		background: var(--raised);
+	}
+	.keyword-filters .tag:hover { border-color: var(--accent); }
+	.keyword-filters .tag[aria-current='true'] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+	.keyword-filters .tag[aria-current='true'] .tag-count { color: inherit; }
+	:global(.section[hidden]) { display: none; }
+</style>
+
+<script>
+	const filters = [...document.querySelectorAll<HTMLAnchorElement>('.keyword-filters [data-keyword]')];
+	const entries = [...document.querySelectorAll<HTMLElement>('.archive .entry')];
+	const status = document.querySelector<HTMLElement>('#filter-status');
+
+	function applyFilter() {
+		const keyword = new URL(location.href).searchParams.get('keyword') || '';
+		const selected = filters.find(link => link.dataset.keyword === keyword) || filters[0];
+		if (!selected || !status) return;
+		const active = selected.dataset.keyword || '';
+		if (active) document.querySelector('.keyword-panel')?.setAttribute('open', '');
+		for (const link of filters) {
+			if (link === selected) link.setAttribute('aria-current', 'true');
+			else link.removeAttribute('aria-current');
+		}
+		for (const entry of entries) {
+			entry.hidden = !!active && !entry.dataset.keywords?.split(' ').includes(active);
+		}
+		for (const list of document.querySelectorAll('.archive')) {
+			const section = list.closest<HTMLElement>('.section');
+			if (section) section.hidden = !list.querySelector('.entry:not([hidden])');
+		}
+		const count = entries.filter(entry => !entry.hidden).length;
+		const label = selected.childNodes[0].textContent?.trim();
+		status.textContent = active
+			? `Showing ${count} ${count === 1 ? 'post' : 'posts'} about ${label} · newest first`
+			: `Showing all ${count} posts · newest first`;
+	}
+
+	document.querySelectorAll<HTMLAnchorElement>('[data-keyword]').forEach(link => {
+		link.addEventListener('click', event => {
+			if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+			event.preventDefault();
+			const url = new URL(location.href);
+			const keyword = link.dataset.keyword || '';
+			if (keyword) url.searchParams.set('keyword', keyword);
+			else url.searchParams.delete('keyword');
+			history.pushState(null, '', url);
+			applyFilter();
+			if (link.closest('.archive')) {
+				filters.find(filter => filter.dataset.keyword === keyword)?.focus();
+			}
+		});
+	});
+	window.addEventListener('popstate', applyFilter);
+	applyFilter();
+</script>

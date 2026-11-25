@@ -1,123 +1,145 @@
 ---
-import PostList from '../../components/PostList.astro';
-import Row from '../../components/Row.astro';
 import Base from '../../layouts/Base.astro';
+import { writingCategories, categoryPath } from '../../data/writing';
 import { href } from '../../lib/paths';
-import { collectTags, getPosts, groupByYear } from '../../lib/posts';
+import { getPosts } from '../../lib/posts';
 
 const posts = await getPosts();
-const years = groupByYear(posts, (post) => post.data.pubDate.getUTCFullYear());
-const tags = collectTags(posts);
-
-const description = 'Research notes on language models and machine learning: domain adaptation, legal NLP, decision models and evaluation.';
+const description = 'Research, experiments, builds and the work behind them. Choose a path to explore.';
 ---
 
 <Base title="Writing" description={description}>
-	<div class="row page-head">
-		<div></div>
-		<div>
-			<h1 class="page-title">Writing</h1>
-			<p class="page-intro">{description}</p>
-		</div>
-	</div>
-
-	<Row label="Keywords">
-		<details class="keyword-panel">
-			<summary>Filter by keyword <span class="tag-count">{tags.length} topics</span></summary>
-			<nav aria-label="Filter posts by keyword" class="keyword-filters">
-				<a class="tag" data-keyword="" aria-current="true" href={href('/writing/')}>
-					All posts <span class="tag-count">{posts.length}</span>
-				</a>
-				{tags.map(({ tag, slug, count }) => (
-					<a class="tag" data-keyword={slug} href={href(`/tags/${slug}/`)}>
-						{tag} <span class="tag-count">{count}</span>
+	<section class="writing-gateway" aria-labelledby="writing-title">
+		<header class="gateway-heading">
+			<h1 id="writing-title" class="page-title">Writing</h1>
+			<p>{description}</p>
+		</header>
+		<nav class="category-banners" aria-label="Writing categories">
+			{writingCategories.map((category, index) => {
+				const entries = posts.filter(post => post.data.category === category.id);
+				const cover = entries.find(post => post.data.image)?.data.image;
+				return (
+					<a class:list={['category-banner', { 'is-active': index === 0 }]} href={href(categoryPath(category.id))} style={`--category-hue: ${category.hue}`} aria-labelledby={`category-${category.id}`} aria-describedby={`count-${category.id}`}>
+						{cover && <img class="category-image" src={href(cover)} alt="" decoding="async" />}
+						<span class="category-number" aria-hidden="true">0{index + 1}</span>
+						<svg class="category-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={category.icon} /></svg>
+						<div class="category-caption">
+							<h2 id={`category-${category.id}`}>{category.title}</h2>
+							<p class="category-description">{category.description}</p>
+							<p class="category-count" id={`count-${category.id}`}>{entries.length ? `${entries.length} ${entries.length === 1 ? 'post' : 'posts'}` : 'No posts yet'} <span aria-hidden="true">↗</span></p>
+						</div>
 					</a>
-				))}
-			</nav>
-		</details>
-		<p id="filter-status" role="status" aria-live="polite">Showing all {posts.length} posts · newest first</p>
-	</Row>
-
-	{
-		years.map(({ year, items }) => (
-			<Row label={String(year)} id={`year-${year}`}>
-				<PostList posts={items} dates="day" archive />
-			</Row>
-		))
-	}
-
-	{
-		posts.length === 0 && (
-			<Row label="Posts">
-				<p>Nothing published yet. The first post is on its way.</p>
-			</Row>
-		)
-	}
-
+				);
+			})}
+		</nav>
+		<div class="gateway-controls">
+			<span>Choose a category to read its timeline.</span>
+			<button class="text-button" type="button" data-category-pause aria-pressed="false" hidden>Pause rotation</button>
+		</div>
+	</section>
 </Base>
 
 <style>
-	.keyword-panel summary { cursor: pointer; font-weight: 500; width: fit-content; }
-	.keyword-panel summary:hover { color: var(--accent); }
-	#filter-status { color: var(--muted); font-size: .875rem; }
-	.keyword-filters { display: flex; flex-wrap: wrap; gap: .65rem; margin-block: 1.25rem; }
-	.keyword-filters .tag {
-		padding: .6rem .85rem;
-		font-size: .875rem;
-		line-height: 1.4;
-		border-color: var(--line-strong);
-		background: var(--raised);
+	:global(.writing-landing-page) { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: clip; }
+	:global(.writing-landing-page > header) { flex: none; }
+	:global(.writing-landing-page > main) { flex: 1; min-height: 0; max-width: 90rem; display: flex; padding-block: clamp(.5rem, 3vh, 2rem); }
+	.writing-gateway { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: clamp(.75rem, 2vh, 1.5rem); max-height: 58rem; margin-block: auto; height: 100%; }
+	.gateway-heading { text-align: center; flex: none; }
+	.gateway-heading p { color: var(--muted); margin-top: .6rem; font-size: clamp(.875rem, 1.2vw, 1.0625rem); }
+	.category-banners { display: flex; flex: 1; min-height: 0; gap: clamp(.4rem, 1vw, 1rem); }
+	.category-banner {
+		position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: flex-end;
+		flex: 1; min-width: 0; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 1rem;
+		padding: clamp(.75rem, 1.6vw, 1.6rem); text-decoration: none; color: var(--text);
+		background: linear-gradient(160deg, hsl(var(--category-hue) 50% 50% / .22), transparent 80%), var(--raised);
+		transition: flex-grow .6s ease, border-color .3s ease;
 	}
-	.keyword-filters .tag:hover { border-color: var(--accent); }
-	.keyword-filters .tag[aria-current='true'] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-	.keyword-filters .tag[aria-current='true'] .tag-count { color: inherit; }
-	:global(.section[hidden]) { display: none; }
+	.category-banner.is-active { flex-grow: 1.8; border-color: var(--accent); }
+	.category-banner:focus-visible { outline-offset: -5px; }
+	.category-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .16; z-index: -2; filter: saturate(.5); }
+	.category-banner::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent, var(--raised) 95%); }
+	.category-number { position: absolute; top: 1rem; left: 1rem; font-size: .75rem; color: var(--muted); letter-spacing: .1em; }
+	.category-symbol { position: absolute; width: clamp(3rem, 7vw, 6rem); top: 28%; left: 50%; transform: translateX(-50%); color: var(--text-2); opacity: .7; }
+	.category-caption h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.25rem, 2.2vw, 2.2rem); line-height: 1.15; }
+	.category-description { display: none; margin-top: 1rem; font-size: .875rem; line-height: 1.5; color: var(--text-2); }
+	.is-active .category-description { display: block; }
+	.category-count { display: flex; justify-content: space-between; gap: .5rem; margin-top: 1rem; font-size: .75rem; color: var(--muted); }
+	.category-count span { color: var(--accent); font-size: 1.1rem; line-height: 1; }
+	.gateway-controls { display: flex; justify-content: space-between; gap: .75rem; flex: none; font-size: .75rem; color: var(--muted); }
+	@media (max-width: 44rem) {
+		:global(.writing-landing-page > main) { padding-inline: 1rem; padding-block: .5rem 1rem; }
+		.writing-gateway { gap: .65rem; }
+		.gateway-heading .page-title { font-size: 2rem; }
+		.gateway-heading p { max-width: 32rem; margin-inline: auto; line-height: 1.4; }
+		.category-banners { flex-direction: column; gap: .45rem; }
+		.category-banner { flex: 1; min-height: 0; padding: .5rem 1rem .5rem 3.5rem; justify-content: center; border-radius: .65rem; transition: flex-grow .6s ease; }
+		.category-banner.is-active { flex-grow: 1.8; }
+		.category-number { top: .4rem; left: .6rem; font-size: .6rem; }
+		.category-symbol { width: 1.75rem; top: 50%; left: 1.6rem; transform: translate(-50%, -50%); }
+		.category-caption h2 { font-size: 1.25rem; }
+		.category-description { margin-top: .3rem; font-size: .75rem; line-height: 1.3; }
+		.category-count { margin-top: .2rem; font-size: .65rem; }
+		.category-image { object-position: center 40%; }
+		.gateway-controls { font-size: .65rem; align-items: center; }
+	}
+	@media (max-height: 700px) {
+		.category-description { display: none !important; }
+		.gateway-heading p { display: none; }
+	}
+	@media (max-width: 44rem) and (max-height: 700px) {
+		.category-banner, .category-banner.is-active { flex-grow: 1; padding-block: .25rem; }
+		.category-caption h2 { font-size: 1.125rem; }
+		.category-count { line-height: 1.1; }
+	}
+	@media (max-height: 500px) {
+		:global(.writing-landing-page .site-header) { padding-block: .5rem; row-gap: .35rem; }
+		:global(.writing-landing-page > main) { padding-block: .35rem; }
+		.gateway-heading .page-title { font-size: 1.5rem; }
+		.writing-gateway { gap: .4rem; }
+		.category-symbol { display: none; }
+		.category-number { display: none; }
+		.category-count { margin-top: .2rem; }
+		.category-caption h2 { font-size: 1.125rem; }
+		.gateway-controls > span { display: none; }
+		.gateway-controls { justify-content: flex-end; }
+	}
+	@media (prefers-reduced-motion: reduce) { .category-banner { transition: none; } }
+	@media (orientation: landscape) and (max-height: 500px) {
+		.category-banners { flex-direction: row; }
+		.category-banner { padding: .6rem; justify-content: flex-end; }
+	}
 </style>
 
 <script>
-	const filters = [...document.querySelectorAll<HTMLAnchorElement>('.keyword-filters [data-keyword]')];
-	const entries = [...document.querySelectorAll<HTMLElement>('.archive .entry')];
-	const status = document.querySelector<HTMLElement>('#filter-status');
-
-	function applyFilter() {
-		const keyword = new URL(location.href).searchParams.get('keyword') || '';
-		const selected = filters.find(link => link.dataset.keyword === keyword) || filters[0];
-		if (!selected || !status) return;
-		const active = selected.dataset.keyword || '';
-		if (active) document.querySelector('.keyword-panel')?.setAttribute('open', '');
-		for (const link of filters) {
-			if (link === selected) link.setAttribute('aria-current', 'true');
-			else link.removeAttribute('aria-current');
-		}
-		for (const entry of entries) {
-			entry.hidden = !!active && !entry.dataset.keywords?.split(' ').includes(active);
-		}
-		for (const list of document.querySelectorAll('.archive')) {
-			const section = list.closest<HTMLElement>('.section');
-			if (section) section.hidden = !list.querySelector('.entry:not([hidden])');
-		}
-		const count = entries.filter(entry => !entry.hidden).length;
-		const label = selected.childNodes[0].textContent?.trim();
-		status.textContent = active
-			? `Showing ${count} ${count === 1 ? 'post' : 'posts'} about ${label} · newest first`
-			: `Showing all ${count} posts · newest first`;
-	}
-
-	document.querySelectorAll<HTMLAnchorElement>('[data-keyword]').forEach(link => {
-		link.addEventListener('click', event => {
-			if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
-			event.preventDefault();
-			const url = new URL(location.href);
-			const keyword = link.dataset.keyword || '';
-			if (keyword) url.searchParams.set('keyword', keyword);
-			else url.searchParams.delete('keyword');
-			history.pushState(null, '', url);
-			applyFilter();
-			if (link.closest('.archive')) {
-				filters.find(filter => filter.dataset.keyword === keyword)?.focus();
-			}
-		});
+	const banners = document.querySelector<HTMLElement>('.category-banners')!;
+	const cards = [...banners.querySelectorAll<HTMLAnchorElement>('.category-banner')];
+	const pause = document.querySelector<HTMLButtonElement>('[data-category-pause]')!;
+	const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+	let current = 0;
+	let paused = reducedMotion.matches;
+	let hovered = false;
+	let timer: number | undefined;
+	const activate = (index: number) => {
+		current = index;
+		cards.forEach((card, i) => card.classList.toggle('is-active', i === index));
+	};
+	const schedule = () => {
+		clearTimeout(timer);
+		pause.setAttribute('aria-pressed', String(paused));
+		pause.textContent = paused ? 'Resume rotation' : 'Pause rotation';
+		if (paused || hovered || banners.matches(':focus-within') || document.hidden) return;
+		timer = window.setTimeout(() => { activate((current + 1) % cards.length); schedule(); }, 5000);
+	};
+	pause.hidden = false;
+	pause.addEventListener('click', () => { paused = !paused; schedule(); });
+	banners.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') { hovered = true; schedule(); } });
+	banners.addEventListener('pointerleave', () => { hovered = false; schedule(); });
+	banners.addEventListener('focusout', () => queueMicrotask(schedule));
+	cards.forEach((card, index) => {
+		card.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') activate(index); });
+		card.addEventListener('focus', () => { activate(index); schedule(); });
 	});
-	window.addEventListener('popstate', applyFilter);
-	applyFilter();
+	document.addEventListener('visibilitychange', schedule);
+	reducedMotion.addEventListener('change', () => { paused = reducedMotion.matches; schedule(); });
+	schedule();
 </script>

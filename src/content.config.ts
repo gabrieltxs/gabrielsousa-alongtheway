@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { categoryIds } from './data/writing';
 
 // Every Markdown file in src/content/writing/ is a post.
 // The fields below go at the top of each file, between the --- lines.
@@ -8,6 +9,7 @@ const writing = defineCollection({
 	loader: glob({ base: './src/content/writing', pattern: '**/*.md' }),
 	schema: z.object({
 		title: z.string(),
+		category: z.enum(categoryIds),
 		// One or two sentences. Shown in lists, search results and link previews.
 		description: z.string(),
 		// Optional. One sentence in plain words for readers outside the field.

@@ -5,10 +5,11 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import UpdatesBanner from '../components/UpdatesBanner.astro';
-import { isCurrent } from '../lib/paths';
+import { href, isCurrent } from '../lib/paths';
 
 type Props = ComponentProps<typeof BaseHead>;
 const isHome = isCurrent(Astro.url.pathname, '/');
+const isWritingLanding = Astro.url.pathname.replace(/\/$/, '') === href('/writing');
 ---
 
 <!doctype html>
@@ -17,13 +18,13 @@ const isHome = isCurrent(Astro.url.pathname, '/');
 		<BaseHead {...Astro.props} />
 		<slot name="head" />
 	</head>
-	<body class:list={{ 'home-page': isHome }}>
+	<body class:list={{ 'home-page': isHome, 'writing-landing-page': isWritingLanding }}>
 		<Header />
 		<main id="main" class="frame">
 			<slot />
 		</main>
-		<Footer />
-		{!isHome && <aside class="scroll-tools" aria-label="Latest updates and page navigation" hidden>
+		{!isWritingLanding && <Footer />}
+		{!isHome && !isWritingLanding && <aside class="scroll-tools" aria-label="Latest updates and page navigation" hidden>
 			<UpdatesBanner compact />
 			<button class="go-to-top" type="button" hidden>Go to top</button>
 		</aside>}

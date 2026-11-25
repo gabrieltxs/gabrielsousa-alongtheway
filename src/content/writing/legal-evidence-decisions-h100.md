@@ -1,4 +1,5 @@
 ---
+category: experiments
 title: 'System-One models for legal evidence: inside the D1–D4 experiments'
 shortTitle: System-One evidence
 plain: "Thirty-five experiments on where a small, fast decision model helps a larger AI answer questions about legal documents."

@@ -1,4 +1,5 @@
 ---
+category: milestones
 title: "Master's thesis defense: approved"
 shortTitle: "Master's defense"
 image: /masters-thesis.jpeg

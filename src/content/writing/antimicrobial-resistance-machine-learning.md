@@ -1,4 +1,5 @@
 ---
+category: experiments
 title: 'From genomes to resistance predictions: my undergraduate machine learning research'
 shortTitle: Genomes and resistance
 plain: "Can a computer tell whether bacteria will resist an antibiotic just by reading their DNA? My undergraduate thesis tested that."

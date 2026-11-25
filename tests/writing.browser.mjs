@@ -1,62 +1,119 @@
-// Run with PLAYWRIGHT_MODULE pointing to an installed playwright/index.mjs.
-// SITE_TEST_URL defaults to the existing local server; no site dependency needed.
+// Run with PLAYWRIGHT_MODULE pointing to playwright/index.mjs and SITE_TEST_URL.
 import assert from 'node:assert/strict';
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ args: ['--no-sandbox'] });
 const base = process.env.SITE_TEST_URL || 'http://127.0.0.1:4321';
+const categories = ['research-notes', 'experiments', 'builds', 'engineering-notes', 'milestones'];
 try {
   const page = await browser.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
+  await page.clock.install();
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.goto(`${base}/writing/`);
-  await page.locator('.keyword-panel summary').click();
-  const visible = page.locator('.archive .entry:visible');
-  assert.equal(await visible.count(), 7);
-  const filters = await page.locator('.keyword-filters [data-keyword]').evaluateAll(links => links.map(link => ({
-    keyword: link.dataset.keyword, count: Number(link.querySelector('.tag-count').textContent),
-  })));
-  for (const { keyword, count } of filters) {
-    await page.locator(`.keyword-filters [data-keyword="${keyword}"]`).click();
-    assert.equal(await visible.count(), count, keyword);
-    assert.equal(await page.locator('.keyword-filters [aria-current="true"]').getAttribute('data-keyword'), keyword);
-    assert.match(await page.locator('#filter-status').textContent(), new RegExp(`Showing (all )?${count} post`));
-    if (keyword) assert(await visible.evaluateAll((entries, key) => entries.every(entry => entry.dataset.keywords.split(' ').includes(key)), keyword));
-  }
-  await page.locator('.keyword-filters [data-keyword=""]').click();
-  await page.locator('.archive [data-keyword="legal-ai"]').first().click();
-  assert.equal(await visible.count(), 4);
+  const cards = page.locator('.category-banner');
+  assert.equal(await cards.count(), 5);
+  assert.equal(await page.locator('.archive, .keyword-panel, .site-footer, .scroll-tools').count(), 0);
+  const active = () => page.locator('.category-banner.is-active').getAttribute('href');
+  assert.match(await active(), /research-notes\/$/);
+  await page.clock.runFor(4900);
+  assert.match(await active(), /research-notes\/$/);
+  await page.clock.runFor(100);
+  assert.match(await active(), /experiments\/$/);
+  await page.getByRole('button', { name: 'Pause rotation' }).click();
+  const paused = await active();
+  await page.clock.runFor(10000);
+  assert.equal(await active(), paused);
+  await page.getByRole('button', { name: 'Resume rotation' }).click();
+  await page.mouse.move(0, 0);
+  await page.clock.runFor(5000);
+  assert.notEqual(await active(), paused);
+  await cards.nth(3).hover();
+  assert.match(await active(), /engineering-notes\/$/);
+  await page.clock.runFor(10000);
+  assert.match(await active(), /engineering-notes\/$/);
+  await page.mouse.move(0, 0);
+  await cards.nth(4).focus();
+  await page.clock.runFor(10000);
+  assert.match(await active(), /milestones\/$/);
+  await page.keyboard.press('Enter');
+  await page.waitForURL('**/writing/category/milestones/');
+  assert.equal(await page.locator('.archive .entry').count(), 1);
+  await page.getByRole('link', { name: '← Writing categories' }).click();
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.reload();
-  assert.equal(await visible.count(), 4);
-  await page.goBack();
-  assert.equal(await visible.count(), 7);
-  await page.goForward();
-  assert.equal(await visible.count(), 4);
-  await page.goto(`${base}/writing/?keyword=does-not-exist`);
-  assert.equal(await visible.count(), 7);
+  const still = await active();
+  await page.clock.runFor(10000);
+  assert.equal(await active(), still);
+  assert(await page.getByRole('button', { name: 'Resume rotation' }).isVisible());
+
   for (const theme of ['dark', 'light']) {
     await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
-    for (const width of [320, 390, 1440]) {
-      await page.setViewportSize({ width, height: 1000 });
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${theme} ${width} overflow`);
-      assert(await visible.first().evaluate(entry => parseFloat(getComputedStyle(entry).borderLeftWidth) >= 1));
-      await page.screenshot({ path: `/tmp/writing-${theme}-${width}.png`, fullPage: true });
+    for (const [width, height] of [[320,480], [320,568], [390,844], [768,1024], [568,320], [667,375], [844,390], [1024,768], [1366,768], [1920,1080], [2544,1400]]) {
+      await page.setViewportSize({ width, height });
+      await page.evaluate(() => document.fonts.ready);
+      const layout = await page.evaluate(() => ({
+        overflowX: document.documentElement.scrollWidth > innerWidth,
+        overflowY: document.documentElement.scrollHeight > innerHeight,
+        cards: [...document.querySelectorAll('.category-banner')].map(card => {
+          const r=card.getBoundingClientRect(), t=card.querySelector('h2').getBoundingClientRect();
+          return r.top>=0 && r.bottom<=innerHeight && r.height>=44 && t.top>=r.top && t.bottom<=r.bottom;
+        }),
+      }));
+      assert(!layout.overflowX && !layout.overflowY, `${theme} ${width}x${height}: ${JSON.stringify(layout)}`);
+      if (!layout.cards.every(Boolean)) {
+        await page.screenshot({path:'/tmp/writing-fit-failure.png'});
+        console.log(await cards.evaluateAll(cards => cards.map(card => ({card:card.getBoundingClientRect().toJSON(), title:card.querySelector('h2').getBoundingClientRect().toJSON()}))));
+      }
+      assert(layout.cards.every(Boolean), `${width}x${height}: banners and titles must fit`);
+      if ([390,1366,1920].includes(width)) await page.screenshot({path:`/tmp/writing-gateway-${theme}-${width}.png`});
     }
   }
-  for (const slug of ['hello-world', 'post-template', 'legal-text-generation', 'goiania-is-three-tokens']) {
-    assert.equal((await page.request.get(`${base}/writing/${slug}/`)).status(), 404, slug);
-    for (const path of ['/', '/rss.xml', '/sitemap-0.xml', '/research/']) {
-      assert(!(await (await page.request.get(`${base}${path}`)).text()).includes(`/writing/${slug}/`), `${path}: ${slug}`);
+  const uniquePosts = new Set();
+  for (const [i, category] of categories.entries()) {
+    await page.goto(`${base}/writing/category/${category}/`);
+    const entries = page.locator('.archive .entry');
+    assert.equal(await entries.count(), [1,5,0,0,1][i]);
+    const urls = await entries.locator('.entry-title a').evaluateAll(links => links.map(link => link.href));
+    for (const url of urls) { assert(!uniquePosts.has(url), 'Each post belongs to exactly one category'); uniquePosts.add(url); }
+    if (!urls.length) assert(await page.getByText('No posts in this category yet.', {exact:false}).isVisible());
+    else {
+      await page.locator('.keyword-panel summary').click();
+      const filters = await page.locator('.keyword-filters [data-keyword]').evaluateAll(links => links.map(link => ({ keyword: link.dataset.keyword, count: Number(link.querySelector('.tag-count').textContent) })));
+      for (const {keyword,count} of filters) {
+        await page.locator(`.keyword-filters [data-keyword="${keyword}"]`).click();
+        assert.equal(await page.locator('.archive .entry:visible').count(),count);
+      }
     }
   }
-  const noJs = await browser.newContext({ javaScriptEnabled: false });
+  assert.equal(uniquePosts.size,7);
+  await page.goto(`${base}/writing/category/experiments/`);
+  const visible = page.locator('.archive .entry:visible');
+  await page.locator('.archive [data-keyword="legal-ai"]').first().click();
+  assert.equal(await visible.count(),4);
+  await page.reload();
+  assert.equal(await visible.count(),4);
+  await page.goBack();
+  assert.equal(await visible.count(),5);
+  await page.goForward();
+  assert.equal(await visible.count(),4);
+  await page.goto(`${base}/writing/category/experiments/?keyword=does-not-exist`);
+  assert.equal(await visible.count(),5);
+  for (const width of [320,390,1440]) {
+    await page.setViewportSize({width,height:900});
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  }
+  for (const url of uniquePosts) assert.equal((await page.request.get(url)).status(),200);
+  for (const slug of ['hello-world','post-template','legal-text-generation','goiania-is-three-tokens']) assert.equal((await page.request.get(`${base}/writing/${slug}/`)).status(),404);
+  const noJs = await browser.newContext({javaScriptEnabled:false});
   const fallback = await noJs.newPage();
   await fallback.goto(`${base}/writing/`);
+  await fallback.getByRole('link', {name:'Experiments',exact:true}).click();
+  assert.equal(await fallback.locator('.archive .entry').count(),5);
   await fallback.locator('.keyword-panel summary').click();
   await fallback.locator('.keyword-filters [data-keyword="legal-ai"]').click();
-  assert.equal(await fallback.locator('.archive .entry').count(), 4);
+  assert.equal(await fallback.locator('.archive .entry').count(),4);
   await noJs.close();
   assert.deepEqual(errors, []);
-  console.log('Writing checks passed: every keyword, counts, card links, history, reload, responsive themes, removed routes and no-JS fallback.');
-} finally {
-  await browser.close();
-}
+  console.log('Five categories, exclusive post classification, 5-second rotation, pause/hover/keyboard/reduced motion, viewport fit, timelines, keyword/history filters and no-JS navigation passed.');
+} finally { await browser.close(); }

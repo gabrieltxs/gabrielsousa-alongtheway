@@ -1,4 +1,5 @@
 ---
+category: research-notes
 title: The Road So Far for System One Models
 shortTitle: System One models
 plain: "A review of 110 studies on small AI models that make one quick, well-defined decision, and of what is still unknown about them."

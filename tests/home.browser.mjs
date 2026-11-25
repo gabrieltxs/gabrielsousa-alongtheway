@@ -79,7 +79,13 @@ try {
   assert.equal(await page.locator('html').getAttribute('data-theme'), savedTheme);
   await page.locator('.card-statement-2 a').click();
   await page.waitForURL('**/writing/');
-  const posts = await page.locator('.archive .entry-title a').evaluateAll(links => links.map(link => link.href));
+  const categories = await page.locator('.category-banner').evaluateAll(links => links.map(link => link.href));
+  assert.equal(categories.length, 5);
+  const posts = [];
+  for (const url of categories) {
+    await page.goto(url);
+    posts.push(...await page.locator('.archive .entry-title a').evaluateAll(links => links.map(link => link.href)));
+  }
   assert.equal(posts.length, 7);
   for (const url of posts) {
     await page.goto(url);

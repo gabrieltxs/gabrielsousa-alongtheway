@@ -1,4 +1,5 @@
 ---
+category: experiments
 title: 'Legal NLP: typed decisions and the meaning of absence'
 shortTitle: Typed legal decisions
 plain: "Asking an AI a legal yes/no question more precisely made it agree with the expected answer far more often, with the same model."

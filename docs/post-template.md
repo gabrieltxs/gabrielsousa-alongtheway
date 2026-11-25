@@ -1,4 +1,5 @@
 ---
+category: research-notes
 title: How to write a post on this site
 description: A template that shows everything a post can contain. Copy this file, rename it and replace the text.
 pubDate: 2026-11-21

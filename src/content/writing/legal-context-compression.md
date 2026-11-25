@@ -1,4 +1,5 @@
 ---
+category: experiments
 title: 'Compressing legal context: what survives, what breaks, and what it saves'
 shortTitle: Legal context compression
 plain: "Cutting the legal text an AI has to read by about 40% costs only a few points of accuracy, but numbers and dates are the first to suffer."
