@@ -44,6 +44,7 @@ const description = 'Research, experiments, builds and the work behind them. Cho
 						<a href={href(postPath(post))} title={post.data.title}>
 							<span class="latest-category">{writingCategories.find(category => category.id === post.data.category)!.title}</span>
 							<h3>{post.data.shortTitle ?? post.data.title}</h3>
+							<p class="latest-description">{post.data.plain ?? post.data.description}</p>
 							<span class="latest-arrow" aria-hidden="true">↗</span>
 						</a>
 					</li>
@@ -73,7 +74,7 @@ const description = 'Research, experiments, builds and the work behind them. Cho
 	.category-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .16; z-index: -2; filter: saturate(.5); }
 	.category-banner::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent, var(--raised) 95%); }
 	.category-number { position: absolute; top: 1rem; left: 1rem; font-size: .75rem; color: var(--muted); letter-spacing: .1em; }
-	.category-symbol { position: absolute; width: clamp(3rem, 7vw, 6rem); top: 28%; left: 50%; transform: translateX(-50%); color: var(--text-2); opacity: .7; }
+	.category-symbol { position: absolute; width: clamp(3rem, 5vw, 4rem); top: 15%; left: 50%; transform: translateX(-50%); color: var(--text-2); opacity: .7; }
 	.category-caption h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.25rem, 2.2vw, 2.2rem); line-height: 1.15; }
 	.category-description { display: none; margin-top: 1rem; font-size: .875rem; line-height: 1.5; color: var(--text-2); }
 	.is-active .category-description { display: block; }
@@ -83,10 +84,11 @@ const description = 'Research, experiments, builds and the work behind them. Cho
 	.latest-writings { flex: none; border-top: 1px solid var(--line); padding-top: .75rem; }
 	.latest-writings h2 { font-size: .875rem; font-weight: 500; margin-bottom: .5rem; }
 	.latest-writings ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; padding: 0; list-style: none; }
-	.latest-writings a { position: relative; display: flex; flex-direction: column; justify-content: center; height: 100%; min-height: 44px; padding: .65rem 2rem .65rem .8rem; border: 1px solid var(--line-strong); border-radius: .65rem; background: var(--raised); text-decoration: none; }
+	.latest-writings a { position: relative; display: flex; flex-direction: column; justify-content: center; height: 100%; min-height: 7.5rem; padding: .65rem 2rem .65rem .8rem; border: 1px solid var(--line-strong); border-radius: .65rem; background: var(--raised); text-decoration: none; }
 	.latest-writings a:hover { border-color: var(--accent); }
 	.latest-category { color: var(--muted); font-size: .6875rem; line-height: 1.3; }
 	.latest-writings h3 { font-size: .9375rem; font-weight: 500; margin-top: .2rem; }
+	.latest-description { margin-top: .45rem; font-size: .8125rem; line-height: 1.4; color: var(--text-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
 	.latest-arrow { position: absolute; right: .65rem; top: 50%; transform: translateY(-50%); color: var(--accent); }
 	@media (max-width: 44rem) {
 		:global(.writing-landing-page > main) { padding-inline: 1rem; padding-block: .5rem 1rem; }
@@ -104,8 +106,9 @@ const description = 'Research, experiments, builds and the work behind them. Cho
 		.category-image { object-position: center 40%; }
 		.gateway-controls { font-size: .65rem; align-items: center; }
 		.latest-writings ol { grid-template-columns: 1fr; gap: .3rem; }
-		.latest-writings a { padding: .3rem 1.75rem .3rem .6rem; }
+		.latest-writings a { min-height: 88px; padding: .3rem 1.75rem .3rem .6rem; }
 		.latest-writings h3 { font-size: .8125rem; margin-top: .1rem; }
+		.latest-description { font-size: .75rem; margin-top: .3rem; -webkit-line-clamp: 2; }
 	}
 	@media (max-height: 700px) {
 		.category-description { display: none !important; }
@@ -137,15 +140,16 @@ const description = 'Research, experiments, builds and the work behind them. Cho
 		.latest-writings h2 { margin-bottom: .3rem; font-size: .75rem; }
 	}
 	@media (orientation: landscape) and (max-height: 400px) {
+		.gateway-heading { display: none; }
+		:global(.writing-landing-page .site-header) { padding-block: .15rem; row-gap: 0; }
 		.category-banner { padding: .25rem .5rem; justify-content: center; }
 		.category-caption h2 { font-size: 1rem; }
 		.category-count { display: none; }
-		.latest-writings a { padding-block: .25rem; }
+		.latest-writings a { min-height: 104px; padding-block: .25rem; }
 		.latest-writings h3 { font-size: .75rem; line-height: 1.2; }
 		.latest-category { font-size: .625rem; line-height: 1.2; }
 	}
-	@media (max-width: 44rem) and (max-height: 740px) and (orientation: portrait) {
-		:global(.writing-landing-page .site-header) { padding-block: .5rem; row-gap: .35rem; }
+	@media (max-width: 44rem) and (max-height: 900px) and (orientation: portrait) {
 		.writing-gateway { gap: .4rem; }
 		.gateway-heading .page-title { font-size: 1.5rem; }
 		.gateway-heading p { display: none; }
@@ -155,6 +159,14 @@ const description = 'Research, experiments, builds and the work behind them. Cho
 		.category-caption h2 { font-size: 1rem; }
 		.category-number, .category-symbol, .category-description, .category-count { display: none !important; }
 		.latest-writings { padding-top: .4rem; }
+	}
+	@media (max-width: 44rem) and (max-height: 740px) and (orientation: portrait) {
+		:global(.writing-landing-page .site-header) { padding-block: .5rem; row-gap: .35rem; }
+		.latest-writings ol { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+		.latest-writings a { min-height: 120px; padding: .4rem; justify-content: flex-start; }
+		.latest-writings h3 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+		.latest-description { -webkit-line-clamp: 3; }
+		.latest-arrow { display: none; }
 	}
 </style>
 

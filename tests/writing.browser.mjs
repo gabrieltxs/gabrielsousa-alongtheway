@@ -12,10 +12,10 @@ try {
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.goto(`${base}/writing/`);
   const cards = page.locator('.category-banner');
-  const latest = await page.locator('.latest-writings a').evaluateAll(links => links.map(link => ({url:link.href, category:link.querySelector('.latest-category').textContent, title:link.querySelector('h3').textContent})));
+  const latest = await page.locator('.latest-writings a').evaluateAll(links => links.map(link => ({url:link.href, category:link.querySelector('.latest-category').textContent, title:link.querySelector('h3').textContent, description:link.querySelector('.latest-description').textContent})));
   assert.equal(latest.length,3);
   assert.equal(new Set(latest.map(post => post.url)).size,3);
-  assert(latest.every(post => post.title && post.category));
+  assert(latest.every(post => post.title && post.category && post.description));
   assert.equal(await cards.count(), 5);
   assert.equal(await page.locator('.archive, .keyword-panel, .site-footer, .scroll-tools').count(), 0);
   const active = () => page.locator('.category-banner.is-active').getAttribute('href');
@@ -61,7 +61,7 @@ try {
         overflowY: document.documentElement.scrollHeight > innerHeight,
         latest: [...document.querySelectorAll('.latest-writings a')].every(link => {
           const r=link.getBoundingClientRect();
-          return r.top>=0 && r.bottom<=innerHeight && r.height>=44 && link.scrollHeight<=r.height+1;
+          return r.top>=0 && r.bottom<=innerHeight && r.height>=88 && link.scrollHeight<=r.height+1 && link.querySelector('.latest-description').getBoundingClientRect().height>0;
         }),
         cards: [...document.querySelectorAll('.category-banner')].map(card => {
           const r=card.getBoundingClientRect(), t=card.querySelector('h2').getBoundingClientRect();
@@ -118,6 +118,10 @@ try {
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   }
   for (const url of uniquePosts) assert.equal((await page.request.get(url)).status(),200);
+  for (const post of latest) {
+    await page.goto(post.url);
+    assert((await page.locator('.post-plain').innerText()).includes(post.description));
+  }
   for (const slug of ['hello-world','post-template','legal-text-generation','goiania-is-three-tokens']) assert.equal((await page.request.get(`${base}/writing/${slug}/`)).status(),404);
   const noJs = await browser.newContext({javaScriptEnabled:false});
   const fallback = await noJs.newPage();
