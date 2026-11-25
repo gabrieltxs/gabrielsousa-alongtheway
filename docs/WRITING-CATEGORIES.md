@@ -15,3 +15,5 @@ Escolha pelo foco do texto. Um relato da defesa é Milestones; a análise dos ex
 A landing `/writing/` apresenta as cinco categorias. O destaque alterna a cada 5 segundos, pausa com hover/foco e tem controle de pausa. Respeita a preferência por movimento reduzido. Em telas estreitas os banners passam de colunas verticais para faixas empilhadas, mantendo as cinco opções na tela. Ela não mostra a timeline nem o rodapé.
 
 Cada categoria tem uma timeline em `/writing/category/<category>/`, com filtros por keyword. Categorias sem posts mostram um estado vazio. Os endereços dos posts, RSS e páginas de tags existentes são preservados. O schema rejeita categorias ausentes ou inválidas no build.
+
+A faixa **Latest writings**, abaixo dos banners, mostra automaticamente os três posts publicados mais recentes, com título curto e categoria, e links diretos para os artigos. Usa a mesma ordenação de `getPosts()`. Em celulares baixos, as categorias passam para uma grade compacta para manter também os três posts visíveis sem rolagem.

@@ -12,6 +12,10 @@ try {
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.goto(`${base}/writing/`);
   const cards = page.locator('.category-banner');
+  const latest = await page.locator('.latest-writings a').evaluateAll(links => links.map(link => ({url:link.href, category:link.querySelector('.latest-category').textContent, title:link.querySelector('h3').textContent})));
+  assert.equal(latest.length,3);
+  assert.equal(new Set(latest.map(post => post.url)).size,3);
+  assert(latest.every(post => post.title && post.category));
   assert.equal(await cards.count(), 5);
   assert.equal(await page.locator('.archive, .keyword-panel, .site-footer, .scroll-tools').count(), 0);
   const active = () => page.locator('.category-banner.is-active').getAttribute('href');
@@ -55,12 +59,17 @@ try {
       const layout = await page.evaluate(() => ({
         overflowX: document.documentElement.scrollWidth > innerWidth,
         overflowY: document.documentElement.scrollHeight > innerHeight,
+        latest: [...document.querySelectorAll('.latest-writings a')].every(link => {
+          const r=link.getBoundingClientRect();
+          return r.top>=0 && r.bottom<=innerHeight && r.height>=44 && link.scrollHeight<=r.height+1;
+        }),
         cards: [...document.querySelectorAll('.category-banner')].map(card => {
           const r=card.getBoundingClientRect(), t=card.querySelector('h2').getBoundingClientRect();
           return r.top>=0 && r.bottom<=innerHeight && r.height>=44 && t.top>=r.top && t.bottom<=r.bottom;
         }),
       }));
       assert(!layout.overflowX && !layout.overflowY, `${theme} ${width}x${height}: ${JSON.stringify(layout)}`);
+      assert(layout.latest, `${width}x${height}: latest writings must fit`);
       if (!layout.cards.every(Boolean)) {
         await page.screenshot({path:'/tmp/writing-fit-failure.png'});
         console.log(await cards.evaluateAll(cards => cards.map(card => ({card:card.getBoundingClientRect().toJSON(), title:card.querySelector('h2').getBoundingClientRect().toJSON()}))));
@@ -70,11 +79,15 @@ try {
     }
   }
   const uniquePosts = new Set();
+  const postDates = new Map();
   for (const [i, category] of categories.entries()) {
     await page.goto(`${base}/writing/category/${category}/`);
     const entries = page.locator('.archive .entry');
     assert.equal(await entries.count(), [1,5,0,0,1][i]);
-    const urls = await entries.locator('.entry-title a').evaluateAll(links => links.map(link => link.href));
+    const records = await entries.evaluateAll(entries => entries.map(entry => ({url:entry.querySelector('.entry-title a').href, date:entry.querySelector('time').dateTime})));
+    const urls = records.map(post => post.url);
+    for (const post of records) postDates.set(post.url, post.date);
+    for (const post of latest.filter(post => urls.includes(post.url))) assert.equal(post.category, await page.locator('h1.page-title').innerText());
     for (const url of urls) { assert(!uniquePosts.has(url), 'Each post belongs to exactly one category'); uniquePosts.add(url); }
     if (!urls.length) assert(await page.getByText('No posts in this category yet.', {exact:false}).isVisible());
     else {
@@ -87,6 +100,7 @@ try {
     }
   }
   assert.equal(uniquePosts.size,7);
+  assert.deepEqual(latest.map(post => postDates.get(post.url)), [...postDates.values()].sort().reverse().slice(0,3));
   await page.goto(`${base}/writing/category/experiments/`);
   const visible = page.locator('.archive .entry:visible');
   await page.locator('.archive [data-keyword="legal-ai"]').first().click();
